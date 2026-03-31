@@ -663,31 +663,28 @@ class ShadcnLayer extends StatelessWidget {
           var theme = Theme.of(context);
           var scrollViewInterceptor = ScrollViewInterceptor(
             enabled: enableScrollInterception,
-            child: ShadcnSkeletonizerConfigLayer(
-              theme: theme,
-              child: DefaultTextStyle.merge(
-                style: theme.typography.base.copyWith(
+            child: DefaultTextStyle.merge(
+              style: theme.typography.base.copyWith(
+                color: theme.colorScheme.foreground,
+              ),
+              child: IconTheme.merge(
+                data: theme.iconTheme.medium.copyWith(
                   color: theme.colorScheme.foreground,
                 ),
-                child: IconTheme.merge(
-                  data: theme.iconTheme.medium.copyWith(
-                    color: theme.colorScheme.foreground,
-                  ),
-                  child: RecentColorsScope(
-                    initialRecentColors: initialRecentColors,
-                    maxRecentColors: maxRecentColors,
-                    onRecentColorsChanged: onRecentColorsChanged,
-                    child: EyeDropperLayer(
-                      child: KeyboardShortcutDisplayMapper(
-                        child: ToastLayer(
-                          child: builder != null
-                              ? Builder(
-                                  builder: (BuildContext context) {
-                                    return builder!(context, child);
-                                  },
-                                )
-                              : child ?? const SizedBox.shrink(),
-                        ),
+                child: RecentColorsScope(
+                  initialRecentColors: initialRecentColors,
+                  maxRecentColors: maxRecentColors,
+                  onRecentColorsChanged: onRecentColorsChanged,
+                  child: EyeDropperLayer(
+                    child: KeyboardShortcutDisplayMapper(
+                      child: ToastLayer(
+                        child: builder != null
+                            ? Builder(
+                                builder: (BuildContext context) {
+                                  return builder!(context, child);
+                                },
+                              )
+                            : child ?? const SizedBox.shrink(),
                       ),
                     ),
                   ),

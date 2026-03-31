@@ -1,22 +1,23 @@
 ---
 title: "Class: ShadcnFlutterPlatformImplementations"
-description: "Platform-specific implementations for shadcn_flutter.   This class provides a base interface for platform-specific functionality.  Platform-specific implementations should override these methods."
+description: "Web platform-specific implementations for shadcn_flutter.   This class provides web-specific functionality, including integration  with the JavaScript preloader and theme synchronization."
 ---
 
 ```dart
-/// Platform-specific implementations for shadcn_flutter.
+/// Web platform-specific implementations for shadcn_flutter.
 ///
-/// This class provides a base interface for platform-specific functionality.
-/// Platform-specific implementations should override these methods.
+/// This class provides web-specific functionality, including integration
+/// with the JavaScript preloader and theme synchronization.
 class ShadcnFlutterPlatformImplementations {
   /// Called when the app is initialized.
   ///
-  /// Platform implementations can override this to perform initialization tasks.
+  /// Notifies the JavaScript preloader that the Flutter app is ready
+  /// by dispatching a "shadcn_flutter_app_ready" event.
   void onAppInitialized();
   /// Called when the theme changes.
   ///
-  /// Platform implementations can override this to respond to theme changes.
-  /// The [theme] parameter contains the new theme data.
+  /// Synchronizes the Flutter theme with the JavaScript preloader by
+  /// dispatching a theme change event with the new color values.
   void onThemeChanged(ThemeData theme);
 }
 ```

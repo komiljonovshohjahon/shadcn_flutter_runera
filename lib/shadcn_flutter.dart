@@ -44,8 +44,6 @@ export 'package:flutter/widgets.dart'
 export 'package:gap/gap.dart';
 // bundle from https://pub.dev/packages/phonecodes
 export 'package:phonecodes/phonecodes.dart' show Countries, Country;
-// bundle from skeletonizer https://pub.dev/packages/skeletonizer
-export 'package:skeletonizer/skeletonizer.dart' show Bone, BoneMock;
 
 // patched flex with paint order
 export 'src/components/layout/flex.dart';
@@ -73,7 +71,6 @@ export 'src/components/display/keyboard_shortcut.dart';
 export 'src/components/display/linear_progress_indicator.dart';
 export 'src/components/display/number_ticker.dart';
 export 'src/components/display/progress.dart';
-export 'src/components/display/skeleton.dart';
 export 'src/components/form/autocomplete.dart';
 export 'src/components/form/checkbox.dart';
 export 'src/components/form/chip_input.dart';
