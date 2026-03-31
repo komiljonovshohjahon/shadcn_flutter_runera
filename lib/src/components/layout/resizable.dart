@@ -113,7 +113,7 @@ class HorizontalResizableDragger extends StatelessWidget {
         width: width,
         height: height,
         child: Icon(
-          RadixIcons.dragHandleDots2,
+          Icons.drag_handle,
           size: iconSize,
           color: iconColor,
         ),
@@ -166,7 +166,7 @@ class VerticalResizableDragger extends StatelessWidget {
         child: Transform.rotate(
           angle: pi / 2,
           child: Icon(
-            RadixIcons.dragHandleDots2,
+            Icons.drag_handle,
             size: iconSize,
             color: iconColor,
           ),

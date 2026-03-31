@@ -373,7 +373,7 @@ class _ColorInputState extends State<ColorInput>
         return [
           if (enableEyeDropper)
             IconButton.outline(
-              icon: Icon(LucideIcons.pipette, size: 16 * theme.scaling),
+              icon: Icon(Icons.colorize, size: 16 * theme.scaling),
               onPressed: () async {
                 await handler.close();
                 if (!context.mounted) return;
@@ -393,7 +393,7 @@ class _ColorInputState extends State<ColorInput>
                     variance: _showHistoryNotifier.value
                         ? ButtonVariance.primary
                         : ButtonVariance.outline,
-                    icon: Icon(LucideIcons.history, size: 16 * theme.scaling),
+                    icon: Icon(Icons.history, size: 16 * theme.scaling),
                     onPressed: () {
                       _showHistoryNotifier.value = !_showHistoryNotifier.value;
                     },

@@ -250,13 +250,13 @@ class Pagination extends StatelessWidget {
     if (showLabel) {
       return GhostButton(
         onPressed: hasPrevious ? () => onPageChanged(page - 1) : null,
-        leading: const Icon(RadixIcons.chevronLeft).iconXSmall(),
+        leading: const Icon(Icons.chevron_left).iconXSmall(),
         child: Text(localizations.buttonPrevious),
       );
     }
     return GhostButton(
       onPressed: hasPrevious ? () => onPageChanged(page - 1) : null,
-      child: const Icon(RadixIcons.chevronLeft).iconXSmall(),
+      child: const Icon(Icons.chevron_left).iconXSmall(),
     );
   }
 
@@ -264,13 +264,13 @@ class Pagination extends StatelessWidget {
     if (showLabel) {
       return GhostButton(
         onPressed: hasNext ? () => onPageChanged(page + 1) : null,
-        trailing: const Icon(RadixIcons.chevronRight).iconXSmall(),
+        trailing: const Icon(Icons.chevron_right).iconXSmall(),
         child: Text(localizations.buttonNext),
       );
     }
     return GhostButton(
       onPressed: hasNext ? () => onPageChanged(page + 1) : null,
-      child: const Icon(RadixIcons.chevronRight).iconXSmall(),
+      child: const Icon(Icons.chevron_right).iconXSmall(),
     );
   }
 

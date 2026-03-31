@@ -252,7 +252,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
                             }
                           });
                         },
-                        child: Icon(LucideIcons.arrowLeft, color: arrowColor)
+                        child: Icon(Icons.chevron_left, color: arrowColor)
                             .iconXSmall(),
                       ),
                       SizedBox(
@@ -313,7 +313,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
                               }
                             });
                           },
-                          child: Icon(LucideIcons.arrowRight, color: arrowColor)
+                          child: Icon(Icons.chevron_right, color: arrowColor)
                               .iconXSmall(),
                         ),
                     ],
@@ -379,7 +379,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
                               }
                             });
                           },
-                          child: Icon(LucideIcons.arrowRight, color: arrowColor)
+                          child: Icon(Icons.chevron_right, color: arrowColor)
                               .iconXSmall(),
                         ),
                       ],
@@ -465,8 +465,7 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
                     }
                   });
                 },
-                child:
-                    Icon(LucideIcons.arrowLeft, color: arrowColor).iconXSmall(),
+                child: Icon(Icons.chevron_left, color: arrowColor).iconXSmall(),
               ),
               SizedBox(
                 width: theme.scaling * 16,
@@ -517,8 +516,8 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
                     }
                   });
                 },
-                child: Icon(LucideIcons.arrowRight, color: arrowColor)
-                    .iconXSmall(),
+                child:
+                    Icon(Icons.chevron_right, color: arrowColor).iconXSmall(),
               ),
             ],
           ),

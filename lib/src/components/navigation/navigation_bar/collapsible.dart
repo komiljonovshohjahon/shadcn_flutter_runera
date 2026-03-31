@@ -238,8 +238,7 @@ class _NavigationCollapsibleState extends State<NavigationCollapsible> {
                   // curve: Curves.easeInOut,
                   child: IconTheme.merge(
                     data: IconThemeData(size: 16 * scaling),
-                    child:
-                        widget.trailing ?? const Icon(LucideIcons.chevronRight),
+                    child: widget.trailing ?? const Icon(Icons.chevron_right),
                   ),
                 ),
               ],

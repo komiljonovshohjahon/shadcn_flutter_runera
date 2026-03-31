@@ -234,7 +234,7 @@ class MenuRadio<T> extends StatelessWidget {
                 width: 16 * scaling,
                 height: 16 * scaling,
                 child: const Icon(
-                  RadixIcons.dotFilled,
+                  Icons.circle,
                 ).iconSmall(),
               )
             : SizedBox(width: 16 * scaling),
@@ -551,7 +551,7 @@ class MenuCheckbox extends StatelessWidget implements MenuItem {
               width: 16 * scaling,
               height: 16 * scaling,
               child: const Icon(
-                RadixIcons.check,
+                Icons.check,
               ).iconSmall(),
             )
           : SizedBox(width: 16 * scaling),
@@ -729,7 +729,7 @@ class _MenuButtonState extends State<MenuButton> {
                                         if (widget.subMenu != null &&
                                             menuBarData == null)
                                           const Icon(
-                                            RadixIcons.chevronRight,
+                                            Icons.chevron_right,
                                           ).iconSmall(),
                                       ],
                                     ).gap(densityGap)

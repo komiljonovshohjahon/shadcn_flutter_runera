@@ -39,15 +39,15 @@ void main() {
         SimpleApp(
           child: CardImage(
             image: Container(width: 100, height: 100, color: Colors.blue),
-            leading: const Icon(RadixIcons.star),
-            trailing: const Icon(RadixIcons.arrowRight),
+            leading: const Icon(Icons.star),
+            trailing: const Icon(Icons.arrow_forward),
             title: const Text('Test Title'),
           ),
         ),
       );
 
-      expect(find.byIcon(RadixIcons.star), findsOneWidget);
-      expect(find.byIcon(RadixIcons.arrowRight), findsOneWidget);
+      expect(find.byIcon(Icons.star), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_forward), findsOneWidget);
       expect(find.text('Test Title'), findsOneWidget);
     });
 
@@ -209,8 +209,8 @@ void main() {
             image: Container(width: 150, height: 150, color: Colors.purple),
             title: const Text('Beautiful Image'),
             subtitle: const Text('A stunning visual'),
-            leading: const Icon(RadixIcons.star),
-            trailing: const Icon(RadixIcons.arrowRight),
+            leading: const Icon(Icons.star),
+            trailing: const Icon(Icons.arrow_forward),
             direction: Axis.horizontal,
             backgroundColor: Colors.gray.shade200,
             borderColor: Colors.gray,
@@ -224,8 +224,8 @@ void main() {
 
       expect(find.text('Beautiful Image'), findsOneWidget);
       expect(find.text('A stunning visual'), findsOneWidget);
-      expect(find.byIcon(RadixIcons.star), findsOneWidget);
-      expect(find.byIcon(RadixIcons.arrowRight), findsOneWidget);
+      expect(find.byIcon(Icons.star), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_forward), findsOneWidget);
 
       final flex = tester.widget<Flex>(find.byType(Flex));
       expect(flex.direction, equals(Axis.horizontal));

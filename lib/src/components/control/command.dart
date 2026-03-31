@@ -373,7 +373,7 @@ class _CommandState extends State<Command> {
                               Text(ShadcnLocalizations.of(context)
                                   .commandSearch),
                           features: [
-                            InputFeature.leading(const Icon(LucideIcons.search)
+                            InputFeature.leading(const Icon(Icons.search)
                                 .iconSmall()
                                 .iconMutedForeground()),
                             if (canPop)
@@ -383,7 +383,7 @@ class _CommandState extends State<Command> {
                                   Navigator.of(context).pop();
                                 },
                                 child: const Icon(
-                                  LucideIcons.x,
+                                  Icons.close,
                                 ).iconSmall(),
                               ))
                           ],

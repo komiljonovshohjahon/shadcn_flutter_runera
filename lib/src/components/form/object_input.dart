@@ -409,7 +409,7 @@ class _DateInputState extends State<DateInput> {
           ),
         );
       },
-      popoverIcon: const Icon(LucideIcons.calendarDays),
+      popoverIcon: const Icon(Icons.calendar_today),
       converter: BiDirectionalConvert(_convertFromDateTime, _convertToDateTime),
       controller: _controller,
       initialValue: _convertToNullableDate(widget.initialValue),

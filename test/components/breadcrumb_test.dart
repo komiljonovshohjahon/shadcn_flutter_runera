@@ -61,14 +61,14 @@ void main() {
       );
 
       expect(find.byType(Breadcrumb), findsOneWidget);
-      expect(find.byIcon(RadixIcons.chevronRight), findsOneWidget);
+      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
     });
 
     testWidgets('uses custom separator', (tester) async {
       await tester.pumpWidget(
         SimpleApp(
           child: Breadcrumb(
-            separator: Icon(Icons.chevron_right),
+            separator: Icon(Icons.more_horiz),
             children: [
               Text('Home'),
               Text('Category'),
@@ -78,8 +78,8 @@ void main() {
       );
 
       expect(find.byType(Breadcrumb), findsOneWidget);
-      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
-      expect(find.byIcon(RadixIcons.chevronRight), findsNothing);
+      expect(find.byIcon(Icons.more_horiz), findsOneWidget);
+      expect(find.byIcon(Icons.chevron_right), findsNothing);
     });
 
     testWidgets('uses slash separator', (tester) async {
@@ -190,7 +190,7 @@ void main() {
 
       expect(find.byType(Breadcrumb), findsOneWidget);
       // Should have separators between Home->Category and Category->Product
-      expect(find.byIcon(RadixIcons.chevronRight), findsNWidgets(2));
+      expect(find.byIcon(Icons.chevron_right), findsNWidgets(2));
     });
 
     testWidgets('renders correctly with button children', (tester) async {

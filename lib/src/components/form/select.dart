@@ -616,7 +616,7 @@ class SelectItemButton<T> extends StatelessWidget {
               },
             ),
             trailing: isSelected
-                ? const Icon(LucideIcons.check).iconSmall()
+                ? const Icon(Icons.check).iconSmall()
                 : hasSelection
                     ? SizedBox(width: 16 * scaling)
                     : null,
@@ -1304,7 +1304,7 @@ class SelectState<T> extends State<Select<T>>
                       color: theme.colorScheme.foreground,
                       opacity: 0.5,
                     ),
-                    child: const Icon(LucideIcons.chevronsUpDown).iconSmall(),
+                    child: const Icon(Icons.unfold_more).iconSmall(),
                   ),
                 ],
               ),
@@ -1392,7 +1392,7 @@ class MultiSelectChip extends StatelessWidget {
               onPressed: () {
                 data?.onChanged(value, false);
               },
-              child: const Icon(LucideIcons.x).iconSmall(),
+              child: const Icon(Icons.close).iconSmall(),
             ),
       child: child,
     );
@@ -1883,7 +1883,7 @@ class _SelectPopupState<T> extends State<SelectPopup<T>>
                           features: [
                             InputFeature.leading(
                               const Icon(
-                                LucideIcons.search,
+                                Icons.search,
                               ).iconSmall().iconMutedForeground(),
                             ),
                           ],
@@ -2055,8 +2055,8 @@ class _SelectPopupState<T> extends State<SelectPopup<T>>
                                                                       ) *
                                                                       scaling,
                                                               child: const Icon(
-                                                                RadixIcons
-                                                                    .chevronUp,
+                                                                Icons
+                                                                    .expand_less,
                                                               ).iconX3Small(),
                                                             ),
                                                           ),
@@ -2118,8 +2118,8 @@ class _SelectPopupState<T> extends State<SelectPopup<T>>
                                                                       ) *
                                                                       scaling,
                                                               child: const Icon(
-                                                                RadixIcons
-                                                                    .chevronDown,
+                                                                Icons
+                                                                    .expand_more,
                                                               ).iconX3Small(),
                                                             ),
                                                           ),

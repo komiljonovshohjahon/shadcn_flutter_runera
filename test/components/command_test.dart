@@ -22,7 +22,7 @@ void main() {
           const Duration(milliseconds: 10)); // Process zero-duration timers
 
       expect(find.byType(TextField), findsOneWidget);
-      expect(find.byIcon(LucideIcons.search), findsOneWidget);
+      expect(find.byIcon(Icons.search), findsOneWidget);
     });
 
     testWidgets('shows results from builder', (tester) async {

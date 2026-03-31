@@ -89,7 +89,7 @@ class _InputHintFeatureState extends InputFeatureState<InputHintFeature> {
     if (feature.position == InputFeaturePosition.trailing) {
       yield Builder(builder: (context) {
         return IconButton.text(
-          icon: feature.icon ?? const Icon(LucideIcons.info),
+          icon: feature.icon ?? const Icon(Icons.info_outline),
           onPressed: () => _showPopup(context),
           density: ButtonDensity.compact,
         );
@@ -101,7 +101,7 @@ class _InputHintFeatureState extends InputFeatureState<InputHintFeature> {
   Iterable<Widget> buildLeading() sync* {
     if (feature.position == InputFeaturePosition.leading) {
       yield IconButton.text(
-        icon: feature.icon ?? const Icon(LucideIcons.info),
+        icon: feature.icon ?? const Icon(Icons.info_outline),
         onPressed: () => _showPopup(context),
         density: ButtonDensity.compact,
       );
@@ -243,9 +243,9 @@ class _InputPasswordToggleFeatureState
 
   Widget _buildIcon() {
     if (_obscureText == true || input.obscureText) {
-      return feature.icon ?? const Icon(LucideIcons.eye);
+      return feature.icon ?? const Icon(Icons.visibility);
     }
-    return feature.iconShow ?? const Icon(LucideIcons.eyeOff);
+    return feature.iconShow ?? const Icon(Icons.visibility_off);
   }
 
   Widget _buildIconButton() {
@@ -331,7 +331,7 @@ class _InputClearFeatureState extends InputFeatureState<InputClearFeature> {
   Iterable<Widget> buildTrailing() sync* {
     if (feature.position == InputFeaturePosition.trailing) {
       yield IconButton.text(
-        icon: feature.icon ?? const Icon(LucideIcons.x),
+        icon: feature.icon ?? const Icon(Icons.close),
         onPressed: _clear,
         density: ButtonDensity.compact,
       );
@@ -342,7 +342,7 @@ class _InputClearFeatureState extends InputFeatureState<InputClearFeature> {
   Iterable<Widget> buildLeading() sync* {
     if (feature.position == InputFeaturePosition.leading) {
       yield IconButton.text(
-        icon: feature.icon ?? const Icon(LucideIcons.x),
+        icon: feature.icon ?? const Icon(Icons.close),
         onPressed: _clear,
         density: ButtonDensity.compact,
       );
@@ -403,7 +403,7 @@ class _InputRevalidateFeatureState
       builder: (context, futures, _) {
         if (futures.isEmpty) {
           return IconButton.text(
-            icon: feature.icon ?? const Icon(LucideIcons.refreshCw),
+            icon: feature.icon ?? const Icon(Icons.refresh),
             onPressed: _revalidate,
             density: ButtonDensity.compact,
           );
@@ -419,7 +419,7 @@ class _InputRevalidateFeatureState
                   start: 0.0,
                   end: 360.0,
                   duration: const Duration(seconds: 1),
-                  child: feature.icon ?? const Icon(LucideIcons.refreshCw),
+                  child: feature.icon ?? const Icon(Icons.refresh),
                   builder: (context, value, child) {
                     return Transform.rotate(
                       angle: degToRad(value),
@@ -432,7 +432,7 @@ class _InputRevalidateFeatureState
               );
             }
             return IconButton.text(
-              icon: feature.icon ?? const Icon(LucideIcons.refreshCw),
+              icon: feature.icon ?? const Icon(Icons.refresh),
               onPressed: _revalidate,
               density: ButtonDensity.compact,
             );
@@ -755,7 +755,7 @@ class _InputSpinnerFeatureState extends InputFeatureState<InputSpinnerFeature> {
                   child: Transform.scale(
                     alignment: Alignment.center,
                     scale: 1.5,
-                    child: const Icon(LucideIcons.chevronUp),
+                    child: const Icon(Icons.expand_less),
                   ),
                 ),
                 onPressed: canIncrease ? _increase : null,
@@ -768,7 +768,7 @@ class _InputSpinnerFeatureState extends InputFeatureState<InputSpinnerFeature> {
                   child: Transform.scale(
                     alignment: Alignment.center,
                     scale: 1.5,
-                    child: const Icon(LucideIcons.chevronDown),
+                    child: const Icon(Icons.expand_more),
                   ),
                 ),
                 onPressed: canDecrease ? _decrease : null,
@@ -834,7 +834,7 @@ class InputStepperButtonFeature extends InputFeature {
     this.min,
     this.max,
     this.position = InputFeaturePosition.trailing,
-    this.icon = const Icon(LucideIcons.plus),
+    this.icon = const Icon(Icons.add),
   });
 
   /// Creates a decrement button feature for numeric inputs.
@@ -857,7 +857,7 @@ class InputStepperButtonFeature extends InputFeature {
     this.min,
     this.max,
     this.position = InputFeaturePosition.trailing,
-    this.icon = const Icon(LucideIcons.minus),
+    this.icon = const Icon(Icons.remove),
   });
 
   @override
@@ -941,7 +941,7 @@ class _InputStepperButtonFeatureState
         return AspectRatio(
           aspectRatio: 1,
           child: IconButton.outline(
-            icon: feature.icon ?? const Icon(LucideIcons.plus),
+            icon: feature.icon ?? const Icon(Icons.add),
             onPressed: canApplyStep ? _increase : null,
             density: ButtonDensity.compact,
             size: ButtonSize.small,
@@ -1015,7 +1015,7 @@ class _InputCopyFeatureState extends InputFeatureState<InputCopyFeature> {
   Iterable<Widget> buildTrailing() sync* {
     if (feature.position == InputFeaturePosition.trailing) {
       yield IconButton.text(
-        icon: feature.icon ?? const Icon(LucideIcons.copy),
+        icon: feature.icon ?? const Icon(Icons.content_copy),
         onPressed: _copy,
         density: ButtonDensity.compact,
       );
@@ -1026,7 +1026,7 @@ class _InputCopyFeatureState extends InputFeatureState<InputCopyFeature> {
   Iterable<Widget> buildLeading() sync* {
     if (feature.position == InputFeaturePosition.leading) {
       yield IconButton.text(
-        icon: feature.icon ?? const Icon(LucideIcons.copy),
+        icon: feature.icon ?? const Icon(Icons.content_copy),
         onPressed: _copy,
         density: ButtonDensity.compact,
       );
@@ -1261,7 +1261,7 @@ class _InputPasteFeatureState extends InputFeatureState<InputPasteFeature> {
   Iterable<Widget> buildTrailing() sync* {
     if (feature.position == InputFeaturePosition.trailing) {
       yield IconButton.text(
-        icon: feature.icon ?? const Icon(LucideIcons.clipboard),
+        icon: feature.icon ?? const Icon(Icons.content_paste),
         onPressed: _paste,
         density: ButtonDensity.compact,
       );
@@ -1272,7 +1272,7 @@ class _InputPasteFeatureState extends InputFeatureState<InputPasteFeature> {
   Iterable<Widget> buildLeading() sync* {
     if (feature.position == InputFeaturePosition.leading) {
       yield IconButton.text(
-        icon: feature.icon ?? const Icon(LucideIcons.clipboard),
+        icon: feature.icon ?? const Icon(Icons.content_paste),
         onPressed: _paste,
         density: ButtonDensity.compact,
       );

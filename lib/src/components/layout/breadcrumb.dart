@@ -46,7 +46,7 @@ class _ArrowSeparator extends StatelessWidget {
     final densityContentPadding = theme.density.baseContentPadding * scaling;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: densityContentPadding * 0.75),
-      child: const Icon(RadixIcons.chevronRight).iconXSmall().muted(),
+      child: const Icon(Icons.chevron_right).iconXSmall().muted(),
     );
   }
 }

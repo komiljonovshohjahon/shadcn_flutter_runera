@@ -671,7 +671,7 @@ class ChipInputState<T> extends State<ChipInput<T>>
           _controller.removeChip(chip);
           widget.onChipsChanged?.call(_controller.chips);
         },
-        child: const Icon(LucideIcons.x),
+        child: const Icon(Icons.close),
       ),
       child: widget.chipBuilder(context, chip),
     );

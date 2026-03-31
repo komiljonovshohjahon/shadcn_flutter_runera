@@ -343,7 +343,7 @@ class DatePicker extends StatelessWidget {
       value: value,
       onChanged: onChanged,
       placeholder: placeholder ?? Text(localizations.placeholderDatePicker),
-      trailing: const Icon(LucideIcons.calendarDays),
+      trailing: const Icon(Icons.calendar_today),
       builder: (context, value) {
         return Text(localizations.formatDateTime(value, showTime: false));
       },
@@ -514,7 +514,7 @@ class DateRangePicker extends StatelessWidget {
       onChanged: onChanged,
       dialogTitle: dialogTitle,
       placeholder: placeholder ?? Text(localizations.placeholderDatePicker),
-      trailing: const Icon(LucideIcons.calendarRange),
+      trailing: const Icon(Icons.date_range),
       builder: (context, value) {
         return Text(
           '${localizations.formatDateTime(value.start, showTime: false)} - ${localizations.formatDateTime(value.end, showTime: false)}',

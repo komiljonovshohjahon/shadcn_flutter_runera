@@ -1,11 +1,5 @@
 library;
 
-// bundle from https://pub.dev/packages/country_flags
-export 'package:country_flags/country_flags.dart' show CountryFlag;
-
-// bundle cross_file
-export 'package:cross_file/cross_file.dart' show XFile;
-
 // bundle from data_widget
 export 'package:data_widget/data_widget.dart';
 export 'package:data_widget/extension.dart';
@@ -42,8 +36,6 @@ export 'package:flutter/widgets.dart'
         RadioGroup;
 // bundle from gap
 export 'package:gap/gap.dart';
-// bundle from https://pub.dev/packages/phonecodes
-export 'package:phonecodes/phonecodes.dart' show Countries, Country;
 
 // patched flex with paint order
 export 'src/components/layout/flex.dart';
@@ -82,7 +74,6 @@ export 'src/components/form/formatted_input.dart';
 export 'src/components/form/formatter.dart';
 export 'src/components/form/image.dart';
 export 'src/components/form/input_otp.dart';
-export 'src/components/form/phone_input.dart';
 export 'src/components/form/radio_group.dart';
 export 'src/components/form/select.dart';
 export 'src/components/form/slider.dart';
@@ -144,9 +135,6 @@ export 'src/components/overlay/toast.dart';
 export 'src/components/overlay/tooltip.dart';
 export 'src/components/text/selectable.dart';
 export 'src/components/text/text.dart';
-export 'src/icons/bootstrap_icons.dart';
-export 'src/icons/lucide_icons.dart';
-export 'src/icons/radix_icons.dart';
 export 'src/shadcn_app.dart';
 export 'src/theme/color_scheme.dart';
 export 'src/theme/generated_colors.dart';

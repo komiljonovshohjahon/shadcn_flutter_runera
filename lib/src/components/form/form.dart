@@ -1650,9 +1650,6 @@ typedef MultipleChoiceKey<T> = FormKey<T>;
 /// Form key type for number input fields with numeric values.
 typedef NumberInputKey = FormKey<num>;
 
-/// Form key type for phone input fields with [PhoneNumber] values.
-typedef PhoneInputKey = FormKey<PhoneNumber>;
-
 /// Form key type for radio card fields with integer index values.
 typedef RadioCardKey = FormKey<int>;
 

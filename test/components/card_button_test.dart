@@ -23,16 +23,16 @@ void main() {
         SimpleApp(
           child: CardButton(
             onPressed: () {},
-            leading: const Icon(RadixIcons.star),
-            trailing: const Icon(RadixIcons.arrowRight),
+            leading: const Icon(Icons.star),
+            trailing: const Icon(Icons.arrow_forward),
             child: const Text('Test Button'),
           ),
         ),
       );
 
       expect(find.byType(CardButton), findsOneWidget);
-      expect(find.byIcon(RadixIcons.star), findsOneWidget);
-      expect(find.byIcon(RadixIcons.arrowRight), findsOneWidget);
+      expect(find.byIcon(Icons.star), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_forward), findsOneWidget);
       expect(find.text('Test Button'), findsOneWidget);
     });
 

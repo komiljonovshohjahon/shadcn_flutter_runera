@@ -226,7 +226,7 @@ class NavigationMenuItemState extends State<NavigationMenuItem> {
                     duration: kDefaultDuration,
                     turns: _menuState!.isActive(this) ? 0.5 : 0,
                     child: const Icon(
-                      RadixIcons.chevronDown,
+                      Icons.expand_more,
                     ).iconXSmall(),
                   )
                 : null,
