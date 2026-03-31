@@ -40,3 +40,11 @@ build/
 /.flutter-plugins
 /.flutter-plugins-dependencies
 /test_widgets
+
+# FVM Version Cache
+.fvm/
+
+
+# Custom Runera ignores
+/docs/
+/docs_images/
