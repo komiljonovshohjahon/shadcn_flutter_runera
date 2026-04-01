@@ -187,7 +187,7 @@ class ThemeData {
   /// - [surfaceOpacity] (`double?`, optional): Surface overlay opacity.
   /// - [surfaceBlur] (`double?`, optional): Surface blur radius.
   const ThemeData({
-    this.colorScheme = ColorSchemes.lightSlate,
+    this.colorScheme = ColorSchemes.lightNeutral,
     this.radius = 0.5,
     this.scaling = 1,
     this.typography = const Typography.geist(),
@@ -211,7 +211,7 @@ class ThemeData {
   /// - [surfaceOpacity] (`double?`, optional): Surface overlay opacity.
   /// - [surfaceBlur] (`double?`, optional): Surface blur radius.
   const ThemeData.dark({
-    this.colorScheme = ColorSchemes.darkSlate,
+    this.colorScheme = ColorSchemes.darkNeutral,
     this.radius = 0.5,
     this.scaling = 1,
     this.typography = const Typography.geist(),
