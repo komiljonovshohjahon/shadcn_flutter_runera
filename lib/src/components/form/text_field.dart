@@ -1987,6 +1987,100 @@ class _AttachedInputFeature {
   _AttachedInputFeature(this.feature, this.state);
 }
 
+Color _textFieldDisabledBackgroundColor(ThemeData theme) {
+  return Color.lerp(
+    theme.colorScheme.muted,
+    theme.colorScheme.border,
+    theme.brightness == Brightness.dark ? 0.35 : 0.55,
+  )!;
+}
+
+Color _textFieldSurfaceColor(
+  ThemeData theme, {
+  required bool filled,
+  required bool enabled,
+  required bool hovered,
+  required bool focused,
+}) {
+  if (!enabled) {
+    return _textFieldDisabledBackgroundColor(theme);
+  }
+
+  final Color baseColor = filled
+      ? Color.lerp(theme.colorScheme.background, theme.colorScheme.muted, 0.72)!
+      : theme.colorScheme.background;
+
+  if (focused) {
+    return Color.lerp(
+        baseColor, theme.colorScheme.accent, filled ? 0.45 : 0.65)!;
+  }
+  if (hovered) {
+    return Color.lerp(
+        baseColor, theme.colorScheme.accent, filled ? 0.2 : 0.35)!;
+  }
+  return baseColor;
+}
+
+Color _textFieldBorderColor(
+  ThemeData theme, {
+  required bool enabled,
+  required bool hovered,
+  required bool focused,
+}) {
+  if (!enabled) {
+    return Color.lerp(
+      theme.colorScheme.border,
+      _textFieldDisabledBackgroundColor(theme),
+      0.45,
+    )!;
+  }
+  if (focused) {
+    return theme.colorScheme.ring;
+  }
+  if (hovered) {
+    return Color.lerp(
+      theme.colorScheme.border,
+      theme.colorScheme.ring,
+      0.24,
+    )!;
+  }
+  return theme.colorScheme.border;
+}
+
+Color _textFieldForegroundColor(ThemeData theme, {required bool enabled}) {
+  if (enabled) {
+    return theme.colorScheme.foreground;
+  }
+  return Color.lerp(
+    theme.colorScheme.foreground,
+    theme.colorScheme.mutedForeground,
+    0.6,
+  )!;
+}
+
+Color _textFieldSecondaryForegroundColor(
+  ThemeData theme, {
+  required bool enabled,
+}) {
+  if (enabled) {
+    return theme.colorScheme.mutedForeground;
+  }
+  return Color.lerp(
+    theme.colorScheme.mutedForeground,
+    theme.colorScheme.border,
+    0.3,
+  )!;
+}
+
+Border _textFieldBorderWithColor(Border border, Color color) {
+  return Border(
+    top: border.top.copyWith(color: color),
+    right: border.right.copyWith(color: color),
+    bottom: border.bottom.copyWith(color: color),
+    left: border.left.copyWith(color: color),
+  );
+}
+
 /// State class for [TextField] widget.
 ///
 /// Manages the text field's state including text editing, selection,
@@ -2062,6 +2156,8 @@ class TextFieldState extends State<TextField>
     _effectiveFocusNode.canRequestFocus = widget.enabled;
     _effectiveFocusNode.addListener(_handleFocusChanged);
     _statesController = widget.statesController ?? WidgetStatesController();
+    _statesController.update(WidgetState.disabled, !widget.enabled);
+    _statesController.update(WidgetState.focused, _effectiveFocusNode.hasFocus);
     String effectiveText = widget.controller?.text ?? widget.initialValue ?? '';
     formValue = effectiveText.isEmpty ? null : effectiveText;
     for (final feature in widget.features) {
@@ -2104,7 +2200,15 @@ class TextFieldState extends State<TextField>
       (oldWidget.focusNode ?? _focusNode)?.removeListener(_handleFocusChanged);
       (widget.focusNode ?? _focusNode)?.addListener(_handleFocusChanged);
     }
+    if (widget.statesController != oldWidget.statesController) {
+      _statesController = widget.statesController ?? WidgetStatesController();
+    }
     _effectiveFocusNode.canRequestFocus = widget.enabled;
+    _statesController.update(WidgetState.disabled, !widget.enabled);
+    _statesController.update(WidgetState.focused, _effectiveFocusNode.hasFocus);
+    if (!widget.enabled) {
+      _statesController.update(WidgetState.hovered, false);
+    }
 
     for (var i = 0;
         i < max(oldWidget.features.length, widget.features.length);
@@ -2333,6 +2437,7 @@ class TextFieldState extends State<TextField>
     Widget editableText,
     TextStyle textStyle,
     ThemeData theme,
+    Color placeholderColor,
   ) {
     var widget = this.widget;
     // If there are no surrounding widgets, just return the core editable text
@@ -2362,7 +2467,7 @@ class TextFieldState extends State<TextField>
                         .merge(theme.typography.small)
                         .merge(theme.typography.normal)
                         .copyWith(
-                          color: theme.colorScheme.mutedForeground,
+                          color: placeholderColor,
                         ),
                     textAlign: widget.textAlign,
                     maxLines: widget.maxLines,
@@ -2525,11 +2630,21 @@ class TextFieldState extends State<TextField>
   }
 
   void _onEnter(PointerEnterEvent event) {
-    _statesController.update(WidgetState.hovered, true);
+    if (!widget.enabled || _statesController.value.hovered) {
+      return;
+    }
+    setState(() {
+      _statesController.update(WidgetState.hovered, true);
+    });
   }
 
   void _onExit(PointerExitEvent event) {
-    _statesController.update(WidgetState.hovered, false);
+    if (!_statesController.value.hovered) {
+      return;
+    }
+    setState(() {
+      _statesController.update(WidgetState.hovered, false);
+    });
   }
 
   Widget _wrapActions({required Widget child}) {
@@ -2730,6 +2845,12 @@ class TextFieldState extends State<TextField>
     }
 
     final bool enabled = widget.enabled;
+    final bool filled = widget.filled ?? compTheme?.filled ?? false;
+    final bool hovered = enabled && _statesController.value.hovered;
+    final bool focused = enabled && _effectiveFocusNode.hasFocus;
+    final Color textColor = _textFieldForegroundColor(theme, enabled: enabled);
+    final Color secondaryColor =
+        _textFieldSecondaryForegroundColor(theme, enabled: enabled);
     final List<TextInputFormatter> formatters = <TextInputFormatter>[
       ...?widget.inputFormatters,
       if (widget.maxLength != null)
@@ -2739,25 +2860,14 @@ class TextFieldState extends State<TextField>
         ),
     ];
 
-    TextStyle defaultTextStyle;
-    if (widget.style != null) {
-      defaultTextStyle = DefaultTextStyle.of(context)
-          .style
-          .merge(theme.typography.small)
-          .merge(theme.typography.normal)
-          .copyWith(
-            color: theme.colorScheme.foreground,
-          )
-          .merge(widget.style);
-    } else {
-      defaultTextStyle = DefaultTextStyle.of(context)
-          .style
-          .merge(theme.typography.small)
-          .merge(theme.typography.normal)
-          .copyWith(
-            color: theme.colorScheme.foreground,
-          );
-    }
+    final TextStyle defaultTextStyle = DefaultTextStyle.of(context)
+        .style
+        .merge(theme.typography.small)
+        .merge(theme.typography.normal)
+        .merge(widget.style)
+        .copyWith(
+          color: textColor,
+        );
 
     final Brightness keyboardAppearance =
         widget.keyboardAppearance ?? theme.brightness;
@@ -2766,13 +2876,21 @@ class TextFieldState extends State<TextField>
         theme.colorScheme.primary;
 
     // Use the default disabled color only if the box decoration was not set.
-    final effectiveBorder = styleValue(
-      defaultValue: Border.all(
-        color: theme.colorScheme.border,
-        strokeAlign: BorderSide.strokeAlignCenter,
+    final Border effectiveBorder = _textFieldBorderWithColor(
+      styleValue(
+        defaultValue: Border.all(
+          color: theme.colorScheme.border,
+          strokeAlign: BorderSide.strokeAlignCenter,
+        ),
+        themeValue: compTheme?.border,
+        widgetValue: widget.border,
       ),
-      themeValue: compTheme?.border,
-      widgetValue: widget.border,
+      _textFieldBorderColor(
+        theme,
+        enabled: enabled,
+        hovered: hovered,
+        focused: focused,
+      ),
     );
     Decoration effectiveDecoration = widget.decoration ??
         BoxDecoration(
@@ -2781,9 +2899,13 @@ class TextFieldState extends State<TextField>
                 widget.borderRadius ?? compTheme?.borderRadius,
               ) ??
               BorderRadius.circular(theme.radiusMd),
-          color: (widget.filled ?? compTheme?.filled ?? false)
-              ? theme.colorScheme.muted
-              : theme.colorScheme.input.scaleAlpha(0.3),
+          color: _textFieldSurfaceColor(
+            theme,
+            filled: filled,
+            enabled: enabled,
+            hovered: hovered,
+            focused: focused,
+          ),
           border: effectiveBorder,
         );
 
@@ -2900,7 +3022,7 @@ class TextFieldState extends State<TextField>
             : null,
         child: IconTheme.merge(
           data: theme.iconTheme.small.copyWith(
-            color: theme.colorScheme.mutedForeground,
+            color: secondaryColor,
           ),
           child: _wrapActions(
             child: MouseRegion(
@@ -2976,7 +3098,11 @@ class TextFieldState extends State<TextField>
                               return Padding(
                                 padding: resolvedPadding,
                                 child: _addTextDependentAttachments(
-                                    editable, defaultTextStyle, theme),
+                                  editable,
+                                  defaultTextStyle,
+                                  theme,
+                                  secondaryColor,
+                                ),
                               );
                             },
                           ),
@@ -3012,9 +3138,7 @@ class TextFieldState extends State<TextField>
         minHeight: fontHeight + verticalPadding,
       ),
       child: WidgetStatesProvider(
-        states: {
-          if (_effectiveFocusNode.hasFocus) WidgetState.hovered,
-        },
+        controller: _statesController,
         child: textField,
       ),
     );
