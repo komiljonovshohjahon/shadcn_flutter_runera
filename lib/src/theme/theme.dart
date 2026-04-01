@@ -188,7 +188,7 @@ class ThemeData {
   /// - [colorScheme] (`ColorScheme`, default: light colors): Color palette.
   /// - [radius] (`double`, default: 0.5): Base radius multiplier.
   /// - [scaling] (`double`, default: 1): Size scaling factor.
-  /// - [typography] (`Typography`, default: Geist): Typography settings.
+  /// - [typography] (`Typography`, default: system): Typography settings.
   /// - [iconTheme] (`IconThemeProperties`, default: standard sizes): Icon theme.
   /// - [platform] (`TargetPlatform?`, optional): Target platform override.
   /// - [surfaceOpacity] (`double?`, optional): Surface overlay opacity.
@@ -197,7 +197,7 @@ class ThemeData {
     this.colorScheme = ColorSchemes.lightNeutral,
     this.radius = 0.5,
     this.scaling = 1,
-    this.typography = const Typography.geist(),
+    this.typography = const Typography.system(),
     this.iconTheme = const IconThemeProperties(),
     TargetPlatform? platform,
     this.surfaceOpacity,
@@ -214,7 +214,7 @@ class ThemeData {
     this.colorScheme = ColorSchemes.lightRunera,
     this.radius = 1,
     this.scaling = 1,
-    this.typography = const Typography.geist(),
+    this.typography = const Typography.runera(),
     this.iconTheme = const IconThemeProperties(),
     TargetPlatform? platform,
     this.surfaceOpacity,
@@ -229,7 +229,7 @@ class ThemeData {
   /// - [colorScheme] (`ColorScheme`, default: dark colors): Color palette.
   /// - [radius] (`double`, default: 0.5): Base radius multiplier.
   /// - [scaling] (`double`, default: 1): Size scaling factor.
-  /// - [typography] (`Typography`, default: Geist): Typography settings.
+  /// - [typography] (`Typography`, default: system): Typography settings.
   /// - [iconTheme] (`IconThemeProperties`, default: standard sizes): Icon theme.
   /// - [platform] (`TargetPlatform?`, optional): Target platform override.
   /// - [surfaceOpacity] (`double?`, optional): Surface overlay opacity.
@@ -238,7 +238,7 @@ class ThemeData {
     this.colorScheme = ColorSchemes.darkNeutral,
     this.radius = 0.5,
     this.scaling = 1,
-    this.typography = const Typography.geist(),
+    this.typography = const Typography.system(),
     this.iconTheme = const IconThemeProperties(),
     TargetPlatform? platform,
     this.surfaceOpacity,
@@ -255,7 +255,7 @@ class ThemeData {
     this.colorScheme = ColorSchemes.darkRunera,
     this.radius = 1,
     this.scaling = 1,
-    this.typography = const Typography.geist(),
+    this.typography = const Typography.runera(),
     this.iconTheme = const IconThemeProperties(),
     TargetPlatform? platform,
     this.surfaceOpacity,

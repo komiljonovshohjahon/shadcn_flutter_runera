@@ -95,7 +95,7 @@ class ColorSchemes {
     cardForeground: Color(0xFF0F172A),
     popover: Color(0xFFFFFFFF),
     popoverForeground: Color(0xFF0F172A),
-    primary: Color(0xFF0E043E),
+    primary: Color(0xFF3B6EF5),
     primaryForeground: Color(0xFFFFFFFF),
     secondary: Color(0xFFF5F7FB),
     secondaryForeground: Color(0xFF0E043E),

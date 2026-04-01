@@ -113,12 +113,10 @@ class Typography {
   /// Muted text style.
   final TextStyle textMuted;
 
-  /// Creates a typography with Geist font family.
-  const Typography.geist({
-    this.sans =
-        const TextStyle(fontFamily: 'GeistSans', package: 'shadcn_flutter'),
-    this.mono =
-        const TextStyle(fontFamily: 'GeistMono', package: 'shadcn_flutter'),
+  /// Creates a typography that uses Flutter's default font family.
+  const Typography.system({
+    this.sans = const TextStyle(),
+    this.mono = const TextStyle(),
     this.xSmall = const TextStyle(fontSize: 12),
     this.small = const TextStyle(fontSize: 14),
     this.base = const TextStyle(fontSize: 16),
@@ -149,12 +147,103 @@ class Typography {
     this.p = const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
     this.blockQuote = const TextStyle(
         fontSize: 16, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),
-    this.inlineCode = const TextStyle(
-        fontFamily: 'GeistMono', fontSize: 14, fontWeight: FontWeight.w600),
+    this.inlineCode =
+        const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
     this.lead = const TextStyle(fontSize: 20),
     this.textLarge = const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
     this.textSmall = const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
     this.textMuted = const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+  });
+
+  /// Creates a typography tuned for the Runera brand.
+  ///
+  /// Runera uses Flutter's default font family until dedicated brand fonts are
+  /// bundled with the package.
+  const Typography.runera({
+    this.sans = const TextStyle(),
+    this.mono = const TextStyle(),
+    this.xSmall = const TextStyle(fontSize: 12, height: 16 / 12),
+    this.small = const TextStyle(fontSize: 14, height: 20 / 14),
+    this.base = const TextStyle(fontSize: 16, height: 24 / 16),
+    this.large = const TextStyle(fontSize: 18, height: 28 / 18),
+    this.xLarge = const TextStyle(fontSize: 20, height: 30 / 20),
+    this.x2Large = const TextStyle(fontSize: 24, height: 32 / 24),
+    this.x3Large = const TextStyle(fontSize: 32, height: 40 / 32),
+    this.x4Large = const TextStyle(fontSize: 40, height: 48 / 40),
+    this.x5Large = const TextStyle(fontSize: 48, height: 56 / 48),
+    this.x6Large = const TextStyle(fontSize: 60, height: 68 / 60),
+    this.x7Large = const TextStyle(fontSize: 72, height: 80 / 72),
+    this.x8Large = const TextStyle(fontSize: 96, height: 104 / 96),
+    this.x9Large = const TextStyle(fontSize: 144, height: 152 / 144),
+    this.thin = const TextStyle(fontWeight: FontWeight.w100),
+    this.light = const TextStyle(fontWeight: FontWeight.w300),
+    this.extraLight = const TextStyle(fontWeight: FontWeight.w200),
+    this.normal = const TextStyle(fontWeight: FontWeight.w400),
+    this.medium = const TextStyle(fontWeight: FontWeight.w500),
+    this.semiBold = const TextStyle(fontWeight: FontWeight.w600),
+    this.bold = const TextStyle(fontWeight: FontWeight.w700),
+    this.extraBold = const TextStyle(fontWeight: FontWeight.w800),
+    this.black = const TextStyle(fontWeight: FontWeight.w900),
+    this.italic = const TextStyle(fontStyle: FontStyle.italic),
+    this.h1 = const TextStyle(
+      fontSize: 40,
+      fontWeight: FontWeight.w800,
+      height: 48 / 40,
+      letterSpacing: -0.6,
+    ),
+    this.h2 = const TextStyle(
+      fontSize: 32,
+      fontWeight: FontWeight.w700,
+      height: 40 / 32,
+      letterSpacing: -0.4,
+    ),
+    this.h3 = const TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w700,
+      height: 32 / 24,
+      letterSpacing: -0.2,
+    ),
+    this.h4 = const TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      height: 24 / 18,
+    ),
+    this.p = const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      height: 24 / 16,
+    ),
+    this.blockQuote = const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      fontStyle: FontStyle.italic,
+      height: 24 / 16,
+    ),
+    this.inlineCode = const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      height: 20 / 14,
+    ),
+    this.lead = const TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w400,
+      height: 30 / 20,
+    ),
+    this.textLarge = const TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      height: 28 / 18,
+    ),
+    this.textSmall = const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      height: 20 / 14,
+    ),
+    this.textMuted = const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      height: 20 / 14,
+    ),
   });
 
   /// Creates a custom typography with all required text styles.

@@ -110,7 +110,7 @@ class LegacyColorSchemes {
       cardForeground: _legacyHex(0xFF0F172A),
       popover: _legacyHex(0xFFFFFFFF),
       popoverForeground: _legacyHex(0xFF0F172A),
-      primary: _legacyHex(0xFF0E043E),
+      primary: _legacyHex(0xFF3B6EF5),
       primaryForeground: _legacyHex(0xFFFFFFFF),
       secondary: _legacyHex(0xFFF5F7FB),
       secondaryForeground: _legacyHex(0xFF0E043E),

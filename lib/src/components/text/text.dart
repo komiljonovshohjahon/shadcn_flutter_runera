@@ -85,13 +85,13 @@ abstract class TextModifier extends Widget {
 /// Text('Hello').sans.large.bold.muted
 /// ```
 extension TextExtension on Widget {
-  /// Applies sans-serif font family.
+  /// Applies the theme's default text family.
   TextModifier get sans => WrappedText(
         style: (context, theme) => theme.typography.sans,
         child: this,
       );
 
-  /// Applies monospace font family.
+  /// Applies the theme's mono text style.
   TextModifier get mono => WrappedText(
         style: (context, theme) => theme.typography.mono,
         child: this,

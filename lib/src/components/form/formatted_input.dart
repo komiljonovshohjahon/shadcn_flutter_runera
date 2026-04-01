@@ -719,7 +719,7 @@ class FormattedInputController extends ValueNotifier<FormattedValue>
 /// Example:
 /// ```dart
 /// FormattedInput(
-///   style: TextStyle(fontFamily: 'monospace'),
+///   style: TextStyle(fontWeight: FontWeight.w500),
 ///   leading: Icon(Icons.phone),
 ///   initialValue: FormattedValue([
 ///     FormattedValuePart.static('('),
@@ -745,8 +745,8 @@ class FormattedInput extends StatefulWidget
   /// Text style applied to all input segments.
   ///
   /// This style affects both static text and editable input fields within
-  /// the formatted input. Using a monospace font family is recommended
-  /// for consistent character spacing across segments.
+  /// the formatted input. Use a consistent font choice across segments to keep
+  /// character spacing and alignment predictable.
   final TextStyle? style;
 
   /// Widget displayed at the beginning of the input.
