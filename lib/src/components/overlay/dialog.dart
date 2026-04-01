@@ -1,5 +1,22 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
+Color _modalBackdropColor(ThemeData theme) {
+  final base = theme.brightness == Brightness.dark
+      ? theme.colorScheme.background
+      : theme.colorScheme.foreground;
+  return base.withValues(
+    alpha: theme.brightness == Brightness.dark ? 0.72 : 0.28,
+  );
+}
+
+Color _modalBorderColor(ThemeData theme) {
+  return Color.lerp(
+    theme.colorScheme.border,
+    theme.colorScheme.ring,
+    theme.brightness == Brightness.dark ? 0.16 : 0.08,
+  )!;
+}
+
 /// Theme configuration for modal backdrop appearance and behavior.
 ///
 /// Defines the visual and behavioral properties of the backdrop that appears
@@ -203,6 +220,7 @@ class ModalBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final compTheme = ComponentTheme.maybeOf<ModalBackdropTheme>(context);
     final modal = styleValue(
         widgetValue: this.modal,
@@ -223,7 +241,7 @@ class ModalBackdrop extends StatelessWidget {
     final barrierColor = styleValue(
         widgetValue: this.barrierColor,
         themeValue: compTheme?.barrierColor,
-        defaultValue: const Color.fromRGBO(0, 0, 0, 0.8));
+        defaultValue: _modalBackdropColor(theme));
     if (!modal) {
       return child;
     }
@@ -390,13 +408,15 @@ class ModalContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var fullScreenMode = Model.maybeOf<bool>(context, kFullScreenMode);
+    final theme = Theme.of(context);
+    final scaling = theme.scaling;
     return SurfaceCard(
       clipBehavior: clipBehavior,
       borderRadius: fullScreenMode == true ? BorderRadius.zero : borderRadius,
-      borderWidth: fullScreenMode == true ? 0 : borderWidth,
-      borderColor: borderColor,
+      borderWidth: fullScreenMode == true ? 0 : (borderWidth ?? 1 * scaling),
+      borderColor: borderColor ?? _modalBorderColor(theme),
       filled: filled,
-      fillColor: fillColor,
+      fillColor: fillColor ?? theme.colorScheme.popover,
       boxShadow: fullScreenMode == true ? const [] : boxShadow,
       padding: padding,
       surfaceOpacity: surfaceOpacity,

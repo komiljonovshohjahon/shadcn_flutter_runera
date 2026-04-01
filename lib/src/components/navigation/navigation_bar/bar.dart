@@ -116,7 +116,12 @@ class _NavigationBarState extends State<NavigationBar> {
     final scaling = theme.scaling;
     final direction = widget.direction ?? Axis.horizontal;
     final backgroundColor = widget.backgroundColor ??
-        theme.colorScheme.background.scaleAlpha(widget.surfaceOpacity ?? 1);
+        theme.colorScheme.secondary.scaleAlpha(widget.surfaceOpacity ?? 1);
+    final borderColor = Color.lerp(
+      theme.colorScheme.border,
+      theme.colorScheme.ring,
+      theme.brightness == Brightness.dark ? 0.16 : 0.08,
+    )!;
     final densityGap = theme.density.baseGap * scaling;
     final densityContentPadding = theme.density.baseContentPadding * scaling;
     final resolvedPadding = (widget.padding ??
@@ -157,7 +162,10 @@ class _NavigationBarState extends State<NavigationBar> {
             keepMainAxisSize: widget.keepMainAxisSize ?? false,
           ),
           child: Container(
-            color: backgroundColor,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              border: Border.all(color: borderColor),
+            ),
             padding: resolvedPadding,
             child: _wrapIntrinsic(
               Flex(

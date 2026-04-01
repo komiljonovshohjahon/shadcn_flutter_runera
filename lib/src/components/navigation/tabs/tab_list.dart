@@ -1,5 +1,21 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
+Color _tabListSelectedFillColor(ThemeData theme) {
+  return Color.lerp(
+    theme.colorScheme.background,
+    theme.colorScheme.accent,
+    theme.brightness == Brightness.dark ? 0.28 : 0.16,
+  )!;
+}
+
+Color _tabListSelectedBorderColor(ThemeData theme) {
+  return Color.lerp(
+    theme.colorScheme.border,
+    theme.colorScheme.ring,
+    theme.brightness == Brightness.dark ? 0.22 : 0.12,
+  )!;
+}
+
 /// Theme configuration for [TabList] appearance and behavior.
 ///
 /// TabListTheme defines the visual styling for tab list components including
@@ -203,27 +219,50 @@ class TabList extends StatelessWidget {
     Widget child,
   ) {
     final theme = Theme.of(context);
+    final scaling = theme.scaling;
+    final densityGap = theme.density.baseGap * scaling;
     final compTheme = ComponentTheme.maybeOf<TabListTheme>(context);
     final indicatorColor = styleValue(
-      defaultValue: theme.colorScheme.primary,
+      defaultValue: theme.colorScheme.ring,
       themeValue: compTheme?.indicatorColor,
     );
     final indicatorHeight = styleValue(
       defaultValue: 2 * theme.scaling,
       themeValue: compTheme?.indicatorHeight,
     );
+    final selected = data.index == index;
+    final foregroundColor = selected
+        ? theme.colorScheme.primary
+        : theme.colorScheme.mutedForeground;
     child = TabButton(
       enabled: data.onSelect != null,
       onPressed: () {
         data.onSelect?.call(data.index);
       },
-      child: child,
+      child: AnimatedContainer(
+        duration: kDefaultDuration,
+        margin: EdgeInsets.symmetric(horizontal: densityGap * 0.15),
+        decoration: BoxDecoration(
+          color: selected ? _tabListSelectedFillColor(theme) : null,
+          borderRadius: BorderRadius.circular(theme.radiusMd),
+          border: selected
+              ? Border.all(color: _tabListSelectedBorderColor(theme))
+              : null,
+        ),
+        child: DefaultTextStyle.merge(
+          style: TextStyle(color: foregroundColor),
+          child: IconTheme.merge(
+            data: IconThemeData(color: foregroundColor),
+            child: child,
+          ),
+        ),
+      ),
     );
     return Stack(
       fit: StackFit.passthrough,
       children: [
-        data.index == index ? child.foreground() : child.muted(),
-        if (data.index == index)
+        child,
+        if (selected)
           Positioned(
             bottom: 0,
             left: 0,

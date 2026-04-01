@@ -144,7 +144,10 @@ class _AlertDialogState extends State<AlertDialog> {
         themeData.density.baseContainerPadding * scaling;
     return ModalBackdrop(
       borderRadius: themeData.borderRadiusXxl,
-      barrierColor: widget.barrierColor ?? Colors.black.withValues(alpha: 0.8),
+      barrierColor: widget.barrierColor ??
+          themeData.colorScheme.foreground.withValues(
+            alpha: themeData.brightness == Brightness.dark ? 0.72 : 0.28,
+          ),
       surfaceClip: ModalBackdrop.shouldClipSurface(
           widget.surfaceOpacity ?? themeData.surfaceOpacity),
       child: ModalContainer(
@@ -152,7 +155,7 @@ class _AlertDialogState extends State<AlertDialog> {
         filled: true,
         borderRadius: themeData.borderRadiusXxl,
         borderWidth: 1 * scaling,
-        borderColor: themeData.colorScheme.muted,
+        borderColor: themeData.colorScheme.border,
         padding:
             widget.padding ?? EdgeInsets.all(densityContainerPadding * 1.5),
         surfaceBlur: widget.surfaceBlur ?? themeData.surfaceBlur,

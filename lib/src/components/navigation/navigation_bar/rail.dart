@@ -155,6 +155,13 @@ class _NavigationRailState extends State<NavigationRail> {
     final theme = Theme.of(context);
     final scaling = theme.scaling;
     final densityGap = theme.density.baseGap * scaling;
+    final backgroundColor = widget.backgroundColor ??
+        theme.colorScheme.secondary.scaleAlpha(widget.surfaceOpacity ?? 1);
+    final borderColor = Color.lerp(
+      theme.colorScheme.border,
+      theme.colorScheme.ring,
+      theme.brightness == Brightness.dark ? 0.16 : 0.08,
+    )!;
 
     final sectionGap = densityGap * padSm;
 
@@ -224,10 +231,10 @@ class _NavigationRailState extends State<NavigationRail> {
           surfaceBlur: widget.surfaceBlur,
           child: AnimatedContainer(
             duration: kDefaultDuration,
-            color: widget.backgroundColor ??
-                (theme.colorScheme.background.scaleAlpha(
-                  widget.surfaceOpacity ?? 1,
-                )),
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              border: Border.all(color: borderColor),
+            ),
             child: Flex(
               direction: widget.direction,
               crossAxisAlignment: CrossAxisAlignment.stretch,

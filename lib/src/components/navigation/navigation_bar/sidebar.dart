@@ -199,6 +199,13 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
     final scaling = theme.scaling;
     final densityGap = theme.density.baseGap * scaling;
     final densityContentPadding = theme.density.baseContentPadding * scaling;
+    final backgroundColor = widget.backgroundColor ??
+        theme.colorScheme.secondary.scaleAlpha(widget.surfaceOpacity ?? 1);
+    final borderColor = Color.lerp(
+      theme.colorScheme.border,
+      theme.colorScheme.ring,
+      theme.brightness == Brightness.dark ? 0.16 : 0.08,
+    )!;
 
     final headerChildren = widget.header ?? [];
 
@@ -236,7 +243,10 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
         child: SurfaceBlur(
           surfaceBlur: widget.surfaceBlur,
           child: Container(
-            color: widget.backgroundColor,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              border: Border.all(color: borderColor),
+            ),
             child: ClipRect(
               child: RepaintBoundary(
                 child: Column(

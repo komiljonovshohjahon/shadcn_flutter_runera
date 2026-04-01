@@ -100,7 +100,7 @@ Applied so far:
 - Step 2: Runera theme presets
 - Step 3: Runera typography
 - Step 4: Runera density and radius
-- Step 5 partial: buttons, text fields, cards/surfaces, select/date/time-related form controls, switch, and radio card
+- Step 5 partial: buttons, text fields, cards/surfaces, select/date/time-related form controls, switch, radio card, tabs/navigation, and dialog/popover surfaces
 
 Not applied yet and intentionally deferred for now:
 - Checkbox
@@ -109,6 +109,4 @@ Not applied yet and intentionally deferred for now:
 - Item picker
 - Object input
 - Slider
-- Tabs/navigation
-- Additional dialog/popover-specific polish
 - Dedicated demo/showcase screen

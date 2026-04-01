@@ -1,5 +1,13 @@
 import '../../../shadcn_flutter.dart';
 
+Color _menuPopupBorderColor(ThemeData theme) {
+  return Color.lerp(
+    theme.colorScheme.border,
+    theme.colorScheme.ring,
+    theme.brightness == Brightness.dark ? 0.16 : 0.08,
+  )!;
+}
+
 /// A theme for [MenuPopup].
 class MenuPopupTheme extends ComponentThemeData {
   /// The opacity of the surface.
@@ -199,7 +207,7 @@ class MenuPopup extends StatelessWidget {
       borderRadius: styleValue(
           widgetValue: borderRadius,
           themeValue: compTheme?.borderRadius,
-          defaultValue: theme.borderRadiusMd),
+          defaultValue: theme.borderRadiusLg),
       filled: true,
       fillColor: styleValue(
           widgetValue: fillColor,
@@ -208,7 +216,7 @@ class MenuPopup extends StatelessWidget {
       borderColor: styleValue(
           widgetValue: borderColor,
           themeValue: compTheme?.borderColor,
-          defaultValue: theme.colorScheme.border),
+          defaultValue: _menuPopupBorderColor(theme)),
       surfaceBlur: styleValue(
           widgetValue: surfaceBlur,
           themeValue: compTheme?.surfaceBlur,

@@ -1,5 +1,37 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
+Color _tabsSelectedFillColor(ThemeData theme) {
+  return Color.lerp(
+    theme.colorScheme.background,
+    theme.colorScheme.accent,
+    theme.brightness == Brightness.dark ? 0.3 : 0.18,
+  )!;
+}
+
+Color _tabsSelectedBorderColor(ThemeData theme) {
+  return Color.lerp(
+    theme.colorScheme.border,
+    theme.colorScheme.ring,
+    theme.brightness == Brightness.dark ? 0.24 : 0.14,
+  )!;
+}
+
+Widget _tabsStyledChild(
+  Widget child,
+  ThemeData theme, {
+  required bool selected,
+}) {
+  final color =
+      selected ? theme.colorScheme.primary : theme.colorScheme.mutedForeground;
+  return DefaultTextStyle.merge(
+    style: TextStyle(color: color),
+    child: IconTheme.merge(
+      data: IconThemeData(color: color),
+      child: child,
+    ),
+  );
+}
+
 /// Theme data for customizing [Tabs] widget appearance.
 ///
 /// This class defines the visual properties that can be applied to
@@ -193,6 +225,7 @@ class Tabs extends StatelessWidget {
       widgetValue: padding,
     );
     final i = data.index;
+    final selected = i == index;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {
@@ -208,12 +241,17 @@ class Tabs extends StatelessWidget {
           alignment: Alignment.center,
           padding: tabPadding,
           decoration: BoxDecoration(
-            color: i == index ? theme.colorScheme.background : null,
+            color: selected ? _tabsSelectedFillColor(theme) : null,
+            border: selected
+                ? Border.all(color: _tabsSelectedBorderColor(theme))
+                : null,
             borderRadius: BorderRadius.circular(theme.radiusMd),
           ),
-          child: (i == index ? child.foreground() : child.muted())
-              .small()
-              .medium(),
+          child: _tabsStyledChild(
+            child.small().medium(),
+            theme,
+            selected: selected,
+          ),
         ),
       ),
     );
@@ -230,7 +268,7 @@ class Tabs extends StatelessWidget {
       themeValue: compTheme?.containerPadding,
     );
     final backgroundColor = styleValue(
-      defaultValue: theme.colorScheme.muted,
+      defaultValue: theme.colorScheme.secondary,
       themeValue: compTheme?.backgroundColor,
     );
     final borderRadius = styleValue(
@@ -244,6 +282,13 @@ class Tabs extends StatelessWidget {
         return Container(
           decoration: BoxDecoration(
             color: backgroundColor,
+            border: Border.all(
+              color: Color.lerp(
+                theme.colorScheme.border,
+                theme.colorScheme.ring,
+                theme.brightness == Brightness.dark ? 0.16 : 0.08,
+              )!,
+            ),
             borderRadius: borderRadius is BorderRadius
                 ? borderRadius
                 : borderRadius.resolve(Directionality.of(context)),
