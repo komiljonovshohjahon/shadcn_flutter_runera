@@ -3611,24 +3611,80 @@ IconThemeData _buttonMenuIconTheme(
   );
 }
 
+TextStyle _buttonLabelStyle(ThemeData themeData) {
+  return themeData.typography.small.merge(themeData.typography.medium);
+}
+
+bool _isButtonHoveredLike(Set<WidgetState> states) {
+  return states.contains(WidgetState.hovered) ||
+      states.contains(WidgetState.focused) ||
+      states.contains(WidgetState.selected);
+}
+
+Color _buttonToneColor(
+  Color color,
+  Set<WidgetState> states, {
+  double hoverDelta = -0.02,
+  double pressedDelta = -0.05,
+}) {
+  double delta = 0;
+  if (states.contains(WidgetState.pressed)) {
+    delta = pressedDelta;
+  } else if (_isButtonHoveredLike(states)) {
+    delta = hoverDelta;
+  }
+  if (delta == 0) {
+    return color;
+  }
+  final hsl = HSLColor.fromColor(color);
+  return hsl.withLightness((hsl.lightness + delta).clamp(0.0, 1.0)).toColor();
+}
+
+Color _buttonOutlineBorderColor(ThemeData themeData, Set<WidgetState> states) {
+  if (states.contains(WidgetState.pressed)) {
+    return Color.lerp(
+      themeData.colorScheme.border,
+      themeData.colorScheme.ring,
+      0.45,
+    )!;
+  }
+  if (_isButtonHoveredLike(states)) {
+    return Color.lerp(
+      themeData.colorScheme.border,
+      themeData.colorScheme.ring,
+      0.25,
+    )!;
+  }
+  return themeData.colorScheme.border;
+}
+
+Color _buttonDisabledFillColor(ThemeData themeData) {
+  final hsl = HSLColor.fromColor(themeData.colorScheme.border);
+  final lightness = themeData.brightness == Brightness.dark
+      ? (hsl.lightness + 0.04).clamp(0.0, 1.0)
+      : (hsl.lightness - 0.02).clamp(0.0, 1.0);
+  return hsl
+      .withSaturation((hsl.saturation * 0.2).clamp(0.0, 1.0))
+      .withLightness(lightness)
+      .toColor();
+}
+
+Color _buttonOnColor(Color color) {
+  return color.computeLuminance() > 0.45 ? Colors.black : Colors.white;
+}
+
 // PRIMARY
 Decoration _buttonPrimaryDecoration(
     BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
   if (states.contains(WidgetState.disabled)) {
     return BoxDecoration(
-      color: themeData.colorScheme.mutedForeground,
-      borderRadius: BorderRadius.circular(themeData.radiusMd),
-    );
-  }
-  if (states.contains(WidgetState.hovered)) {
-    return BoxDecoration(
-      color: themeData.colorScheme.primary.scaleAlpha(0.8),
+      color: _buttonDisabledFillColor(themeData),
       borderRadius: BorderRadius.circular(themeData.radiusMd),
     );
   }
   return BoxDecoration(
-    color: themeData.colorScheme.primary,
+    color: _buttonToneColor(themeData.colorScheme.primary, states),
     borderRadius: BorderRadius.circular(themeData.radiusMd),
   );
 }
@@ -3636,16 +3692,20 @@ Decoration _buttonPrimaryDecoration(
 TextStyle _buttonPrimaryTextStyle(
     BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
-  return themeData.typography.small.merge(themeData.typography.medium).copyWith(
-        color: themeData.colorScheme.primaryForeground,
-      );
+  return _buttonLabelStyle(themeData).copyWith(
+    color: states.contains(WidgetState.disabled)
+        ? themeData.colorScheme.mutedForeground
+        : themeData.colorScheme.primaryForeground,
+  );
 }
 
 IconThemeData _buttonPrimaryIconTheme(
     BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
   return IconThemeData(
-    color: themeData.colorScheme.primaryForeground,
+    color: states.contains(WidgetState.disabled)
+        ? themeData.colorScheme.mutedForeground
+        : themeData.colorScheme.primaryForeground,
   );
 }
 
@@ -3655,18 +3715,21 @@ Decoration _buttonSecondaryDecoration(
   var themeData = Theme.of(context);
   if (states.contains(WidgetState.disabled)) {
     return BoxDecoration(
-      color: themeData.colorScheme.primaryForeground,
+      color: _buttonDisabledFillColor(themeData),
       borderRadius: BorderRadius.circular(themeData.radiusMd),
     );
   }
-  if (states.contains(WidgetState.hovered)) {
-    return BoxDecoration(
-      color: themeData.colorScheme.secondary.scaleAlpha(0.8),
-      borderRadius: BorderRadius.circular(themeData.radiusMd),
-    );
-  }
+  final color =
+      states.contains(WidgetState.pressed) || _isButtonHoveredLike(states)
+          ? _buttonToneColor(
+              themeData.colorScheme.accent,
+              states,
+              hoverDelta: -0.01,
+              pressedDelta: -0.03,
+            )
+          : themeData.colorScheme.secondary;
   return BoxDecoration(
-    color: themeData.colorScheme.secondary,
+    color: color,
     borderRadius: BorderRadius.circular(themeData.radiusMd),
   );
 }
@@ -3674,11 +3737,11 @@ Decoration _buttonSecondaryDecoration(
 TextStyle _buttonSecondaryTextStyle(
     BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
-  return themeData.typography.small.merge(themeData.typography.medium).copyWith(
-        color: states.contains(WidgetState.disabled)
-            ? themeData.colorScheme.mutedForeground
-            : themeData.colorScheme.secondaryForeground,
-      );
+  return _buttonLabelStyle(themeData).copyWith(
+    color: states.contains(WidgetState.disabled)
+        ? themeData.colorScheme.mutedForeground
+        : themeData.colorScheme.secondaryForeground,
+  );
 }
 
 IconThemeData _buttonSecondaryIconTheme(
@@ -3694,34 +3757,25 @@ IconThemeData _buttonSecondaryIconTheme(
 Decoration _buttonOutlineDecoration(
     BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
-  if (states.contains(WidgetState.disabled)) {
-    return BoxDecoration(
-      color: themeData.colorScheme.border.withValues(
-        alpha: 0,
-      ),
-      border: Border.all(
-        color: themeData.colorScheme.border,
-        width: 1,
-        strokeAlign: BorderSide.strokeAlignCenter,
-      ),
-      borderRadius: BorderRadius.circular(themeData.radiusMd),
-    );
-  }
-  if (states.contains(WidgetState.hovered)) {
-    return BoxDecoration(
-      color: themeData.colorScheme.input.scaleAlpha(0.5),
-      border: Border.all(
-        color: themeData.colorScheme.input,
-        width: 1,
-        strokeAlign: BorderSide.strokeAlignCenter,
-      ),
-      borderRadius: BorderRadius.circular(themeData.radiusMd),
-    );
-  }
+  final isDisabled = states.contains(WidgetState.disabled);
+  final isInteractive =
+      states.contains(WidgetState.pressed) || _isButtonHoveredLike(states);
+  final backgroundColor = isDisabled
+      ? themeData.colorScheme.background.withValues(alpha: 0)
+      : isInteractive
+          ? _buttonToneColor(
+              themeData.colorScheme.accent,
+              states,
+              hoverDelta: -0.01,
+              pressedDelta: -0.03,
+            )
+          : themeData.colorScheme.background.withValues(alpha: 0);
   return BoxDecoration(
-    color: themeData.colorScheme.input.scaleAlpha(0.3),
+    color: backgroundColor,
     border: Border.all(
-      color: themeData.colorScheme.border,
+      color: isDisabled
+          ? themeData.colorScheme.border.scaleAlpha(0.6)
+          : _buttonOutlineBorderColor(themeData, states),
       strokeAlign: BorderSide.strokeAlignCenter,
       width: 1,
     ),
@@ -3732,11 +3786,11 @@ Decoration _buttonOutlineDecoration(
 TextStyle _buttonOutlineTextStyle(
     BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
-  return themeData.typography.small.merge(themeData.typography.medium).copyWith(
-        color: states.contains(WidgetState.disabled)
-            ? themeData.colorScheme.mutedForeground
-            : themeData.colorScheme.foreground,
-      );
+  return _buttonLabelStyle(themeData).copyWith(
+    color: states.contains(WidgetState.disabled)
+        ? themeData.colorScheme.mutedForeground
+        : themeData.colorScheme.foreground,
+  );
 }
 
 IconThemeData _buttonOutlineIconTheme(
@@ -3754,29 +3808,32 @@ Decoration _buttonGhostDecoration(
   var themeData = Theme.of(context);
   if (states.contains(WidgetState.disabled)) {
     return BoxDecoration(
-      color: themeData.colorScheme.muted.withValues(alpha: 0),
+      color: themeData.colorScheme.background.withValues(alpha: 0),
       borderRadius: BorderRadius.circular(themeData.radiusMd),
     );
   }
-  if (states.contains(WidgetState.hovered)) {
-    return BoxDecoration(
-      color: themeData.colorScheme.muted.scaleAlpha(0.8),
-      borderRadius: BorderRadius.circular(themeData.radiusMd),
-    );
-  }
+  final color =
+      states.contains(WidgetState.pressed) || _isButtonHoveredLike(states)
+          ? _buttonToneColor(
+              themeData.colorScheme.accent,
+              states,
+              hoverDelta: -0.01,
+              pressedDelta: -0.03,
+            )
+          : themeData.colorScheme.background.withValues(alpha: 0);
   return BoxDecoration(
-    color: themeData.colorScheme.muted.withValues(alpha: 0),
+    color: color,
     borderRadius: BorderRadius.circular(themeData.radiusMd),
   );
 }
 
 TextStyle _buttonGhostTextStyle(BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
-  return themeData.typography.small.merge(themeData.typography.medium).copyWith(
-        color: states.contains(WidgetState.disabled)
-            ? themeData.colorScheme.mutedForeground
-            : themeData.colorScheme.foreground,
-      );
+  return _buttonLabelStyle(themeData).copyWith(
+    color: states.contains(WidgetState.disabled)
+        ? themeData.colorScheme.mutedForeground
+        : themeData.colorScheme.foreground,
+  );
 }
 
 IconThemeData _buttonGhostIconTheme(
@@ -3791,9 +3848,9 @@ IconThemeData _buttonGhostIconTheme(
 
 TextStyle _buttonMutedTextStyle(BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
-  return themeData.typography.small.merge(themeData.typography.medium).copyWith(
-        color: themeData.colorScheme.mutedForeground,
-      );
+  return _buttonLabelStyle(themeData).copyWith(
+    color: themeData.colorScheme.mutedForeground,
+  );
 }
 
 IconThemeData _buttonMutedIconTheme(
@@ -3814,14 +3871,15 @@ Decoration _buttonLinkDecoration(
 
 TextStyle _buttonLinkTextStyle(BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
-  return themeData.typography.small.merge(themeData.typography.medium).copyWith(
-        color: states.contains(WidgetState.disabled)
-            ? themeData.colorScheme.mutedForeground
-            : themeData.colorScheme.foreground,
-        decoration: states.contains(WidgetState.hovered)
+  return _buttonLabelStyle(themeData).copyWith(
+    color: states.contains(WidgetState.disabled)
+        ? themeData.colorScheme.mutedForeground
+        : themeData.colorScheme.primary,
+    decoration:
+        _isButtonHoveredLike(states) || states.contains(WidgetState.pressed)
             ? TextDecoration.underline
             : TextDecoration.none,
-      );
+  );
 }
 
 IconThemeData _buttonLinkIconTheme(
@@ -3830,7 +3888,7 @@ IconThemeData _buttonLinkIconTheme(
   return IconThemeData(
     color: states.contains(WidgetState.disabled)
         ? themeData.colorScheme.mutedForeground
-        : themeData.colorScheme.foreground,
+        : themeData.colorScheme.primary,
   );
 }
 
@@ -3844,18 +3902,18 @@ Decoration _buttonTextDecoration(
 
 TextStyle _buttonTextTextStyle(BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
-  return themeData.typography.small.merge(themeData.typography.medium).copyWith(
-        color: states.contains(WidgetState.hovered)
-            ? themeData.colorScheme.primary
-            : themeData.colorScheme.mutedForeground,
-      );
+  return _buttonLabelStyle(themeData).copyWith(
+    color: _isButtonHoveredLike(states) || states.contains(WidgetState.pressed)
+        ? themeData.colorScheme.primary
+        : themeData.colorScheme.mutedForeground,
+  );
 }
 
 IconThemeData _buttonTextIconTheme(
     BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
   return IconThemeData(
-    color: states.contains(WidgetState.hovered)
+    color: _isButtonHoveredLike(states) || states.contains(WidgetState.pressed)
         ? themeData.colorScheme.primary
         : themeData.colorScheme.mutedForeground,
   );
@@ -3866,18 +3924,17 @@ Decoration _buttonDestructiveDecoration(
   var themeData = Theme.of(context);
   if (states.contains(WidgetState.disabled)) {
     return BoxDecoration(
-      color: themeData.colorScheme.primaryForeground,
-      borderRadius: BorderRadius.circular(themeData.radiusMd),
-    );
-  }
-  if (states.contains(WidgetState.hovered)) {
-    return BoxDecoration(
-      color: themeData.colorScheme.destructive.scaleAlpha(0.8),
+      color: _buttonDisabledFillColor(themeData),
       borderRadius: BorderRadius.circular(themeData.radiusMd),
     );
   }
   return BoxDecoration(
-    color: themeData.colorScheme.destructive.scaleAlpha(0.5),
+    color: _buttonToneColor(
+      themeData.colorScheme.destructive,
+      states,
+      hoverDelta: -0.03,
+      pressedDelta: -0.06,
+    ),
     borderRadius: BorderRadius.circular(themeData.radiusMd),
   );
 }
@@ -3885,12 +3942,11 @@ Decoration _buttonDestructiveDecoration(
 TextStyle _buttonDestructiveTextStyle(
     BuildContext context, Set<WidgetState> states) {
   var themeData = Theme.of(context);
-  return themeData.typography.small.merge(themeData.typography.medium).copyWith(
-        color: states.contains(WidgetState.disabled)
-            ? themeData.colorScheme.mutedForeground
-            : Colors
-                .white, // yeah ik, its straight up white regardless light or dark mode
-      );
+  return _buttonLabelStyle(themeData).copyWith(
+    color: states.contains(WidgetState.disabled)
+        ? themeData.colorScheme.mutedForeground
+        : _buttonOnColor(themeData.colorScheme.destructive),
+  );
 }
 
 IconThemeData _buttonDestructiveIconTheme(
@@ -3899,7 +3955,7 @@ IconThemeData _buttonDestructiveIconTheme(
   return IconThemeData(
     color: states.contains(WidgetState.disabled)
         ? themeData.colorScheme.mutedForeground
-        : Colors.white,
+        : _buttonOnColor(themeData.colorScheme.destructive),
   );
 }
 
