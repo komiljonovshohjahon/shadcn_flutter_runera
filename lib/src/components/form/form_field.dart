@@ -1,5 +1,78 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
+bool _isFormTriggerHoveredLike(Set<WidgetState> states) {
+  return states.contains(WidgetState.hovered) ||
+      states.contains(WidgetState.focused);
+}
+
+Color _formTriggerBackgroundColor(ThemeData theme, Set<WidgetState> states) {
+  if (states.contains(WidgetState.disabled)) {
+    return Color.lerp(
+      theme.colorScheme.muted,
+      theme.colorScheme.border,
+      theme.brightness == Brightness.dark ? 0.35 : 0.55,
+    )!;
+  }
+  if (states.contains(WidgetState.focused)) {
+    return Color.lerp(
+      theme.colorScheme.background,
+      theme.colorScheme.accent,
+      0.65,
+    )!;
+  }
+  if (_isFormTriggerHoveredLike(states)) {
+    return Color.lerp(
+      theme.colorScheme.background,
+      theme.colorScheme.accent,
+      0.35,
+    )!;
+  }
+  return theme.colorScheme.background;
+}
+
+Color _formTriggerBorderColor(ThemeData theme, Set<WidgetState> states) {
+  if (states.contains(WidgetState.disabled)) {
+    return Color.lerp(
+      theme.colorScheme.border,
+      theme.colorScheme.muted,
+      0.35,
+    )!;
+  }
+  if (states.contains(WidgetState.focused)) {
+    return theme.colorScheme.ring;
+  }
+  if (_isFormTriggerHoveredLike(states)) {
+    return Color.lerp(
+      theme.colorScheme.border,
+      theme.colorScheme.ring,
+      0.24,
+    )!;
+  }
+  return theme.colorScheme.border;
+}
+
+Color _formTriggerForegroundColor(ThemeData theme, Set<WidgetState> states) {
+  if (states.contains(WidgetState.disabled)) {
+    return Color.lerp(
+      theme.colorScheme.foreground,
+      theme.colorScheme.mutedForeground,
+      0.6,
+    )!;
+  }
+  return theme.colorScheme.foreground;
+}
+
+Color _formTriggerSecondaryColor(ThemeData theme, Set<WidgetState> states) {
+  if (states.contains(WidgetState.disabled)) {
+    return Color.lerp(
+      theme.colorScheme.mutedForeground,
+      theme.colorScheme.border,
+      0.3,
+    )!;
+  }
+  return theme.colorScheme.mutedForeground;
+}
+
 /// Type definition for the save button in an object input form field.
 typedef ObjectInputSaveButton = PrimaryButton;
 
@@ -303,15 +376,40 @@ class ObjectFormFieldState<T> extends State<ObjectFormField<T>>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final size = widget.size ?? ButtonSize.normal;
     final density = widget.density ?? ButtonDensity.normal;
     final shape = widget.shape ?? ButtonShape.rectangle;
-    return OutlineButton(
-      trailing: widget.trailing?.iconMutedForeground().iconSmall(),
-      leading: widget.leading?.iconMutedForeground().iconSmall(),
-      size: size,
-      density: density,
-      shape: shape,
+    return Button(
+      alignment: AlignmentDirectional.centerStart,
+      style: ButtonStyle(
+        variance: ButtonVariance.outline,
+        size: size,
+        density: density,
+        shape: shape,
+      ).copyWith(
+        decoration: (context, states, value) {
+          return (value as BoxDecoration).copyWith(
+            color: _formTriggerBackgroundColor(theme, states),
+            border: Border.all(
+              color: _formTriggerBorderColor(theme, states),
+              strokeAlign: BorderSide.strokeAlignCenter,
+            ),
+          );
+        },
+        textStyle: (context, states, value) {
+          return value.copyWith(
+            color: _formTriggerForegroundColor(theme, states),
+          );
+        },
+        iconTheme: (context, states, value) {
+          return value.copyWith(
+            color: _formTriggerSecondaryColor(theme, states),
+          );
+        },
+      ),
+      trailing: widget.trailing?.iconSmall(),
+      leading: widget.leading?.iconSmall(),
       onPressed: enabled && widget.onChanged != null ? prompt : null,
       enabled: enabled,
       child: value == null

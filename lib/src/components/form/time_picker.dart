@@ -1,6 +1,25 @@
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
+TextStyle _pickerDialogInputTextStyle(ThemeData theme) {
+  return theme.typography.x3Large
+      .merge(theme.typography.semiBold)
+      .copyWith(height: 1);
+}
+
+Widget _pickerDialogLabel(BuildContext context, String label) {
+  return Text(label).small().medium().muted();
+}
+
+Widget _pickerDialogSeparator(BuildContext context) {
+  final theme = Theme.of(context);
+  final scaling = theme.scaling;
+  return Padding(
+    padding: EdgeInsets.only(bottom: 24 * scaling),
+    child: const Text(':').x5Large().withPadding(horizontal: 8 * scaling),
+  );
+}
+
 /// Theme configuration for [TimePicker] widget appearance and behavior.
 ///
 /// Defines default settings for time picker components including display
@@ -399,37 +418,37 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
   Widget _buildInput(
       BuildContext context, TextEditingController controller, String label) {
     final theme = Theme.of(context);
+    final scaling = theme.scaling;
     return ConstrainedBox(
-      constraints: BoxConstraints(
-          minWidth: 72 * theme.scaling, minHeight: 72 * theme.scaling),
-      child: Stack(
-        clipBehavior: Clip.none,
+      constraints: BoxConstraints(minWidth: 80 * scaling),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 8 * scaling,
         children: [
-          Positioned.fill(
+          SizedBox(
+            height: 72 * scaling,
             child: TextField(
               textAlign: TextAlign.center,
               textAlignVertical: TextAlignVertical.center,
               controller: controller,
-              style: theme.typography.x4Large,
+              filled: true,
+              padding:
+                  EdgeInsets.symmetric(horizontal: 12, vertical: 18) * scaling,
+              style: _pickerDialogInputTextStyle(theme),
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 const _TimeFormatter(),
               ],
             ),
           ),
-          Positioned(
-            bottom: (-24) * theme.scaling,
-            child: Text(label).muted(),
-          ),
+          _pickerDialogLabel(context, label),
         ],
       ),
     );
   }
 
   Widget _buildSeparator(BuildContext context) {
-    final theme = Theme.of(context);
-    final scaling = theme.scaling;
-    return const Text(':').x5Large().withPadding(horizontal: 8 * scaling);
+    return _pickerDialogSeparator(context);
   }
 
   void _onChanged() {
@@ -505,7 +524,8 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
     return IntrinsicWidth(
       child: IntrinsicHeight(
         child: Padding(
-          padding: EdgeInsets.only(bottom: densityContainerPadding * 1.75),
+          padding:
+              EdgeInsets.symmetric(vertical: densityContainerPadding * 0.25),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
@@ -551,6 +571,9 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
                               _onChanged();
                             });
                           },
+                          style: const ButtonStyle.secondary(
+                            density: ButtonDensity.compact,
+                          ),
                           child: Text(localizations.timeAM),
                         ),
                       ),
@@ -563,6 +586,9 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
                               _onChanged();
                             });
                           },
+                          style: const ButtonStyle.secondary(
+                            density: ButtonDensity.compact,
+                          ),
                           child: Text(localizations.timePM),
                         ),
                       ),
@@ -750,36 +776,37 @@ class _DurationPickerDialogState extends State<DurationPickerDialog> {
   Widget _buildInput(
       BuildContext context, TextEditingController controller, String label) {
     final theme = Theme.of(context);
+    final scaling = theme.scaling;
     return ConstrainedBox(
-      constraints: BoxConstraints(
-          minWidth: 72 * theme.scaling, minHeight: 72 * theme.scaling),
-      child: Stack(
-        clipBehavior: Clip.none,
+      constraints: BoxConstraints(minWidth: 80 * scaling),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 8 * scaling,
         children: [
-          Positioned.fill(
+          SizedBox(
+            height: 72 * scaling,
             child: TextField(
               textAlign: TextAlign.center,
+              textAlignVertical: TextAlignVertical.center,
               controller: controller,
-              style: theme.typography.x4Large,
+              filled: true,
+              padding:
+                  EdgeInsets.symmetric(horizontal: 12, vertical: 18) * scaling,
+              style: _pickerDialogInputTextStyle(theme),
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 const _TimeFormatter(),
               ],
             ),
           ),
-          Positioned(
-            bottom: (-24) * theme.scaling,
-            child: Text(label).muted(),
-          ),
+          _pickerDialogLabel(context, label),
         ],
       ),
     );
   }
 
   Widget _buildSeparator(BuildContext context) {
-    final theme = Theme.of(context);
-    final scaling = theme.scaling;
-    return const Text(':').x5Large().withPadding(horizontal: 8 * scaling);
+    return _pickerDialogSeparator(context);
   }
 
   void _onChanged() {
@@ -845,7 +872,8 @@ class _DurationPickerDialogState extends State<DurationPickerDialog> {
     return IntrinsicWidth(
       child: IntrinsicHeight(
         child: Padding(
-          padding: EdgeInsets.only(bottom: densityContainerPadding * 1.75),
+          padding:
+              EdgeInsets.symmetric(vertical: densityContainerPadding * 0.25),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,

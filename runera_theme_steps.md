@@ -93,3 +93,22 @@ Add one small demo/snapshot screen to validate the theme.
 Goal: catch problems with contrast, spacing, and radius before the brand spreads through the library.
 
 My recommendation is to start with only Steps 1 and 2 first. That gives you the biggest visual shift with the smallest code footprint.
+
+**Current Status**
+Applied so far:
+- Step 1: Runera color tokens
+- Step 2: Runera theme presets
+- Step 3: Runera typography
+- Step 4: Runera density and radius
+- Step 5 partial: buttons, text fields, cards/surfaces, select/date/time-related form controls, switch, and radio card
+
+Not applied yet and intentionally deferred for now:
+- Checkbox
+- Multiple choice
+- Autocomplete
+- Item picker
+- Object input
+- Slider
+- Tabs/navigation
+- Additional dialog/popover-specific polish
+- Dedicated demo/showcase screen

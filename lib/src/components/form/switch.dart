@@ -5,6 +5,113 @@ import '../../../shadcn_flutter.dart';
 /// Standard duration for switch state transitions and animations.
 const kSwitchDuration = Duration(milliseconds: 100);
 
+Color _switchInactiveTrackColor(ThemeData theme) {
+  if (theme.brightness == Brightness.dark) {
+    return Color.lerp(
+      theme.colorScheme.muted,
+      theme.colorScheme.foreground,
+      0.12,
+    )!;
+  }
+  return Color.lerp(
+    theme.colorScheme.border,
+    theme.colorScheme.foreground,
+    0.08,
+  )!;
+}
+
+Color _switchDisabledTrackColor(ThemeData theme) {
+  return Color.lerp(
+    theme.colorScheme.muted,
+    theme.colorScheme.border,
+    theme.brightness == Brightness.dark ? 0.35 : 0.55,
+  )!;
+}
+
+Color _switchTrackColor(
+  ThemeData theme, {
+  required bool enabled,
+  required bool selected,
+  required bool hovered,
+  required Color activeColor,
+  required Color inactiveColor,
+}) {
+  if (!enabled) {
+    return _switchDisabledTrackColor(theme);
+  }
+  if (selected) {
+    return activeColor;
+  }
+  if (hovered) {
+    return Color.lerp(inactiveColor, theme.colorScheme.accent, 0.4)!;
+  }
+  return inactiveColor;
+}
+
+Color _switchTrackBorderColor(
+  ThemeData theme, {
+  required bool enabled,
+  required bool selected,
+  required bool hovered,
+  required bool focused,
+  required Color activeColor,
+}) {
+  if (!enabled) {
+    return Color.lerp(
+      theme.colorScheme.border,
+      theme.colorScheme.muted,
+      0.35,
+    )!;
+  }
+  if (selected) {
+    return Color.lerp(
+      activeColor,
+      theme.colorScheme.foreground,
+      theme.brightness == Brightness.dark ? 0.08 : 0.12,
+    )!;
+  }
+  if (focused) {
+    return theme.colorScheme.ring;
+  }
+  if (hovered) {
+    return Color.lerp(
+      theme.colorScheme.border,
+      theme.colorScheme.ring,
+      0.24,
+    )!;
+  }
+  return theme.colorScheme.border;
+}
+
+Color _switchThumbColor(
+  ThemeData theme, {
+  required bool enabled,
+  required bool selected,
+  required Color activeThumbColor,
+  required Color inactiveThumbColor,
+}) {
+  if (!enabled) {
+    return Color.lerp(
+      theme.colorScheme.mutedForeground,
+      theme.colorScheme.border,
+      0.15,
+    )!;
+  }
+  return selected ? activeThumbColor : inactiveThumbColor;
+}
+
+List<BoxShadow> _switchThumbShadow(ThemeData theme) {
+  return [
+    BoxShadow(
+      color: Colors.black.withValues(
+        alpha: theme.brightness == Brightness.dark ? 0.22 : 0.12,
+      ),
+      blurRadius: 4 * theme.scaling,
+      offset: Offset(0, 1 * theme.scaling),
+    ),
+  ];
+}
+
 /// Theme configuration for [Switch] widget styling and visual appearance.
 ///
 /// Defines the visual properties used by switch components including colors,
@@ -335,6 +442,7 @@ class Switch extends StatefulWidget {
 
 class _SwitchState extends State<Switch> with FormValueSupplier<bool, Switch> {
   bool _focusing = false;
+  bool _hovering = false;
 
   @override
   void initState() {
@@ -374,15 +482,15 @@ class _SwitchState extends State<Switch> with FormValueSupplier<bool, Switch> {
     final inactiveColor = styleValue(
         widgetValue: widget.inactiveColor,
         themeValue: compTheme?.inactiveColor,
-        defaultValue: theme.colorScheme.input);
+        defaultValue: _switchInactiveTrackColor(theme));
     final activeThumbColor = styleValue(
         widgetValue: widget.activeThumbColor,
         themeValue: compTheme?.activeThumbColor,
-        defaultValue: theme.colorScheme.background);
+        defaultValue: theme.colorScheme.primaryForeground);
     final inactiveThumbColor = styleValue(
         widgetValue: widget.inactiveThumbColor,
         themeValue: compTheme?.inactiveThumbColor,
-        defaultValue: theme.colorScheme.foreground);
+        defaultValue: theme.colorScheme.background);
     final borderRadius = styleValue<BorderRadiusGeometry>(
         widgetValue: widget.borderRadius,
         themeValue: compTheme?.borderRadius,
@@ -403,6 +511,13 @@ class _SwitchState extends State<Switch> with FormValueSupplier<bool, Switch> {
             setState(() {
               _focusing = value;
             });
+          },
+          onShowHoverHighlight: (value) {
+            if (value != _hovering) {
+              setState(() {
+                _hovering = value;
+              });
+            }
           },
           actions: {
             ActivateIntent: CallbackAction(
@@ -434,11 +549,24 @@ class _SwitchState extends State<Switch> with FormValueSupplier<bool, Switch> {
                   borderRadius:
                       optionallyResolveBorderRadius(context, borderRadius) ??
                           BorderRadius.circular(theme.radiusXl),
-                  color: !_enabled
-                      ? theme.colorScheme.muted
-                      : widget.value
-                          ? activeColor
-                          : inactiveColor,
+                  color: _switchTrackColor(
+                    theme,
+                    enabled: _enabled,
+                    selected: widget.value,
+                    hovered: _hovering,
+                    activeColor: activeColor,
+                    inactiveColor: inactiveColor,
+                  ),
+                  border: Border.all(
+                    color: _switchTrackBorderColor(
+                      theme,
+                      enabled: _enabled,
+                      selected: widget.value,
+                      hovered: _hovering,
+                      focused: _focusing,
+                      activeColor: activeColor,
+                    ),
+                  ),
                 ),
                 child: Stack(
                   children: [
@@ -453,11 +581,14 @@ class _SwitchState extends State<Switch> with FormValueSupplier<bool, Switch> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(theme.radiusLg),
-                            color: !_enabled
-                                ? theme.colorScheme.mutedForeground
-                                : widget.value
-                                    ? activeThumbColor
-                                    : inactiveThumbColor,
+                            color: _switchThumbColor(
+                              theme,
+                              enabled: _enabled,
+                              selected: widget.value,
+                              activeThumbColor: activeThumbColor,
+                              inactiveThumbColor: inactiveThumbColor,
+                            ),
+                            boxShadow: _switchThumbShadow(theme),
                           ),
                         ),
                       ),

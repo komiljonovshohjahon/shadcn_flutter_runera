@@ -1,5 +1,39 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
+List<BoxShadow> _cardOverlayShadow(ThemeData theme) {
+  if (theme.brightness == Brightness.dark) {
+    return [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.22),
+        blurRadius: 28,
+        offset: const Offset(0, 12),
+        spreadRadius: -14,
+      ),
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.12),
+        blurRadius: 12,
+        offset: const Offset(0, 4),
+        spreadRadius: -8,
+      ),
+    ];
+  }
+
+  return [
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.06),
+      blurRadius: 24,
+      offset: const Offset(0, 10),
+      spreadRadius: -16,
+    ),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.03),
+      blurRadius: 8,
+      offset: const Offset(0, 2),
+      spreadRadius: -6,
+    ),
+  ];
+}
+
 /// Theme data for customizing [Card] and [SurfaceCard] widget appearance.
 ///
 /// This class defines the visual properties that can be applied to card widgets,
@@ -270,10 +304,23 @@ class Card extends StatelessWidget {
       themeValue: compTheme?.filled,
       defaultValue: false,
     );
+    final surfaceOpacity = styleValue(
+      widgetValue: this.surfaceOpacity,
+      themeValue: compTheme?.surfaceOpacity,
+      defaultValue: null,
+    );
+    final surfaceBlur = styleValue(
+      widgetValue: this.surfaceBlur,
+      themeValue: compTheme?.surfaceBlur,
+      defaultValue: null,
+    );
+    final bool isOverlaySurface =
+        surfaceOpacity != null || (surfaceBlur != null && surfaceBlur > 0);
     final fillColor = styleValue(
       widgetValue: this.fillColor,
       themeValue: compTheme?.fillColor,
-      defaultValue: theme.colorScheme.border,
+      defaultValue:
+          isOverlaySurface ? theme.colorScheme.popover : theme.colorScheme.card,
     );
     final borderRadius = styleValue(
       widgetValue: this.borderRadius,
@@ -283,7 +330,7 @@ class Card extends StatelessWidget {
     final borderColor = styleValue(
       widgetValue: this.borderColor,
       themeValue: compTheme?.borderColor,
-      defaultValue: null,
+      defaultValue: theme.colorScheme.border,
     );
     final borderWidth = styleValue(
       widgetValue: this.borderWidth,
@@ -298,30 +345,29 @@ class Card extends StatelessWidget {
     final boxShadow = styleValue(
       widgetValue: this.boxShadow,
       themeValue: compTheme?.boxShadow,
-      defaultValue: null,
-    );
-    final surfaceOpacity = styleValue(
-      widgetValue: this.surfaceOpacity,
-      themeValue: compTheme?.surfaceOpacity,
-      defaultValue: null,
-    );
-    final surfaceBlur = styleValue(
-      widgetValue: this.surfaceBlur,
-      themeValue: compTheme?.surfaceBlur,
-      defaultValue: null,
+      defaultValue: isOverlaySurface ? _cardOverlayShadow(theme) : null,
     );
     final duration = styleValue(
       widgetValue: this.duration,
       themeValue: compTheme?.duration,
       defaultValue: null,
     );
+    final Color backgroundColor = filled
+        ? fillColor
+        : (isOverlaySurface
+            ? theme.colorScheme.popover
+            : theme.colorScheme.card);
+    final Color foregroundColor =
+        isOverlaySurface || (filled && fillColor == theme.colorScheme.popover)
+            ? theme.colorScheme.popoverForeground
+            : theme.colorScheme.cardForeground;
 
     return OutlinedContainer(
       clipBehavior: clipBehavior,
       borderRadius: borderRadius,
       borderWidth: borderWidth,
       borderColor: borderColor,
-      backgroundColor: filled ? fillColor : theme.colorScheme.card,
+      backgroundColor: backgroundColor,
       boxShadow: boxShadow,
       padding: padding,
       surfaceOpacity: surfaceOpacity,
@@ -330,7 +376,7 @@ class Card extends StatelessWidget {
       child: DefaultTextStyle.merge(
         child: child,
         style: TextStyle(
-          color: theme.colorScheme.cardForeground,
+          color: foregroundColor,
         ),
       ),
     );
@@ -451,7 +497,7 @@ class SurfaceCard extends StatelessWidget {
       borderRadius: borderRadius,
       borderWidth: borderWidth,
       borderColor: borderColor,
-      filled: filled,
+      filled: filled ?? true,
       fillColor: fillColor,
       boxShadow: boxShadow,
       padding: padding,
@@ -459,7 +505,13 @@ class SurfaceCard extends StatelessWidget {
           surfaceOpacity ?? compTheme?.surfaceOpacity ?? theme.surfaceOpacity,
       surfaceBlur: surfaceBlur ?? compTheme?.surfaceBlur ?? theme.surfaceBlur,
       duration: duration ?? compTheme?.duration,
-      child: child,
+      child: DefaultTextStyle.merge(
+        style: TextStyle(color: theme.colorScheme.popoverForeground),
+        child: IconTheme.merge(
+          data: IconThemeData(color: theme.colorScheme.popoverForeground),
+          child: child,
+        ),
+      ),
     );
   }
 }

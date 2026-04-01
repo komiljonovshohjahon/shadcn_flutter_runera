@@ -5,6 +5,82 @@ import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:shadcn_flutter/src/components/control/hover.dart';
 
+bool _isSelectTriggerHoveredLike(Set<WidgetState> states) {
+  return states.contains(WidgetState.hovered) ||
+      states.contains(WidgetState.focused);
+}
+
+Color _selectTriggerBackgroundColor(
+  ThemeData theme,
+  Set<WidgetState> states, {
+  required bool filled,
+}) {
+  if (states.contains(WidgetState.disabled)) {
+    return Color.lerp(
+      theme.colorScheme.muted,
+      theme.colorScheme.border,
+      theme.brightness == Brightness.dark ? 0.35 : 0.55,
+    )!;
+  }
+
+  final baseColor = filled
+      ? Color.lerp(theme.colorScheme.background, theme.colorScheme.muted, 0.72)!
+      : theme.colorScheme.background;
+
+  if (states.contains(WidgetState.focused)) {
+    return Color.lerp(
+        baseColor, theme.colorScheme.accent, filled ? 0.45 : 0.65)!;
+  }
+  if (_isSelectTriggerHoveredLike(states)) {
+    return Color.lerp(
+        baseColor, theme.colorScheme.accent, filled ? 0.2 : 0.35)!;
+  }
+  return baseColor;
+}
+
+Color _selectTriggerBorderColor(ThemeData theme, Set<WidgetState> states) {
+  if (states.contains(WidgetState.disabled)) {
+    return Color.lerp(
+      theme.colorScheme.border,
+      theme.colorScheme.muted,
+      0.35,
+    )!;
+  }
+  if (states.contains(WidgetState.focused)) {
+    return theme.colorScheme.ring;
+  }
+  if (_isSelectTriggerHoveredLike(states)) {
+    return Color.lerp(
+      theme.colorScheme.border,
+      theme.colorScheme.ring,
+      0.24,
+    )!;
+  }
+  return theme.colorScheme.border;
+}
+
+Color _selectTriggerForegroundColor(ThemeData theme, Set<WidgetState> states) {
+  if (states.contains(WidgetState.disabled)) {
+    return Color.lerp(
+      theme.colorScheme.foreground,
+      theme.colorScheme.mutedForeground,
+      0.6,
+    )!;
+  }
+  return theme.colorScheme.foreground;
+}
+
+Color _selectTriggerSecondaryColor(ThemeData theme, Set<WidgetState> states) {
+  if (states.contains(WidgetState.disabled)) {
+    return Color.lerp(
+      theme.colorScheme.mutedForeground,
+      theme.colorScheme.border,
+      0.3,
+    )!;
+  }
+  return theme.colorScheme.mutedForeground;
+}
+
 /// Theme data for customizing [Select] widget appearance and behavior.
 ///
 /// This class defines the visual and behavioral properties that can be applied to
@@ -1160,20 +1236,56 @@ class SelectState<T> extends State<Select<T>>
     super.dispose();
   }
 
-  BoxDecoration _overrideBorderRadius(
+  BoxDecoration _resolveTriggerDecoration(
     BuildContext context,
     Set<WidgetState> states,
     Decoration value,
   ) {
-    return (value as BoxDecoration).copyWith(borderRadius: _borderRadius);
+    final theme = Theme.of(context);
+    final boxDecoration = value as BoxDecoration;
+    return boxDecoration.copyWith(
+      color: _selectTriggerBackgroundColor(
+        theme,
+        states,
+        filled: widget.filled,
+      ),
+      border: Border.all(
+        color: _selectTriggerBorderColor(theme, states),
+        strokeAlign: BorderSide.strokeAlignCenter,
+      ),
+      borderRadius: optionallyResolveBorderRadius(context, _borderRadius) ??
+          boxDecoration.borderRadius,
+    );
   }
 
-  EdgeInsetsGeometry _overridePadding(
+  EdgeInsetsGeometry _resolveTriggerPadding(
     BuildContext context,
     Set<WidgetState> states,
     EdgeInsetsGeometry value,
   ) {
-    return _padding!;
+    return _padding ?? value;
+  }
+
+  TextStyle _resolveTriggerTextStyle(
+    BuildContext context,
+    Set<WidgetState> states,
+    TextStyle value,
+  ) {
+    final theme = Theme.of(context);
+    return value.copyWith(
+      color: _selectTriggerForegroundColor(theme, states),
+    );
+  }
+
+  IconThemeData _resolveTriggerIconTheme(
+    BuildContext context,
+    Set<WidgetState> states,
+    IconThemeData value,
+  ) {
+    final theme = Theme.of(context);
+    return value.copyWith(
+      color: _selectTriggerSecondaryColor(theme, states),
+    );
   }
 
   bool _onChanged(Object? value, bool selected) {
@@ -1207,15 +1319,17 @@ class SelectState<T> extends State<Select<T>>
             _focusNode.unfocus();
           },
           child: Button(
+            alignment: AlignmentDirectional.centerStart,
             enabled: enabled,
             disableHoverEffect: _disableHoverEffect,
             focusNode: _focusNode,
-            style: (widget.filled
-                    ? ButtonVariance.secondary
-                    : ButtonVariance.outline)
-                .copyWith(
-              decoration: _borderRadius != null ? _overrideBorderRadius : null,
-              padding: _padding != null ? _overridePadding : null,
+            style: const ButtonStyle(
+              variance: ButtonVariance.outline,
+            ).copyWith(
+              decoration: _resolveTriggerDecoration,
+              padding: _resolveTriggerPadding,
+              textStyle: _resolveTriggerTextStyle,
+              iconTheme: _resolveTriggerIconTheme,
             ),
             onPressed: widget.onChanged == null
                 ? null
@@ -1299,13 +1413,7 @@ class SelectState<T> extends State<Select<T>>
                     ),
                   ),
                   SizedBox(width: 8 * scaling),
-                  IconTheme.merge(
-                    data: IconThemeData(
-                      color: theme.colorScheme.foreground,
-                      opacity: 0.5,
-                    ),
-                    child: const Icon(Icons.unfold_more).iconSmall(),
-                  ),
+                  const Icon(Icons.unfold_more).iconSmall(),
                 ],
               ),
             ),
@@ -1871,7 +1979,7 @@ class _SelectPopupState<T> extends State<SelectPopup<T>>
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (widget.enableSearch)
+                    if (widget.enableSearch) ...[
                       ComponentTheme(
                         data: const FocusOutlineTheme(
                           border: Border.fromBorderSide(BorderSide.none),
@@ -1880,6 +1988,7 @@ class _SelectPopupState<T> extends State<SelectPopup<T>>
                           controller: _searchController,
                           border: const Border.fromBorderSide(BorderSide.none),
                           borderRadius: BorderRadius.zero,
+                          filled: true,
                           features: [
                             InputFeature.leading(
                               const Icon(
@@ -1890,10 +1999,15 @@ class _SelectPopupState<T> extends State<SelectPopup<T>>
                           autofocus: true,
                           placeholder: widget.searchPlaceholder,
                           padding: const EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 12) *
+                                  vertical: 10, horizontal: 12) *
                               scaling,
                         ),
                       ),
+                      Container(
+                        height: 1,
+                        color: theme.colorScheme.border,
+                      ),
+                    ],
                     Flexible(
                       child: ListenableBuilder(
                         listenable: _searchController,
