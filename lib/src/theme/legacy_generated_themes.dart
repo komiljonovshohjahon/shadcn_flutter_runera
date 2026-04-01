@@ -1,5 +1,7 @@
 import '../../shadcn_flutter.dart';
 
+Color _legacyHex(int hex) => HSLColor.fromColor(Color(hex)).toColor();
+
 void _assertNotThemeModeSystem(ThemeMode mode, String label) {
   if (mode == ThemeMode.system) {
     final List<DiagnosticsNode> diagnosticList = [];
@@ -100,12 +102,64 @@ class LegacyColorSchemes {
 
   /// Returns light Runera color scheme.
   static ColorScheme lightRunera() {
-    return lightNeutral();
+    return ColorScheme(
+      brightness: Brightness.light,
+      background: _legacyHex(0xFFFFFFFF),
+      foreground: _legacyHex(0xFF0F172A),
+      card: _legacyHex(0xFFFFFFFF),
+      cardForeground: _legacyHex(0xFF0F172A),
+      popover: _legacyHex(0xFFFFFFFF),
+      popoverForeground: _legacyHex(0xFF0F172A),
+      primary: _legacyHex(0xFF0E043E),
+      primaryForeground: _legacyHex(0xFFFFFFFF),
+      secondary: _legacyHex(0xFFF5F7FB),
+      secondaryForeground: _legacyHex(0xFF0E043E),
+      muted: _legacyHex(0xFFF5F7FB),
+      mutedForeground: _legacyHex(0xFF475569),
+      accent: _legacyHex(0xFFE8EFFF),
+      accentForeground: _legacyHex(0xFF0E043E),
+      destructive: _legacyHex(0xFFEF4444),
+      destructiveForeground: _legacyHex(0xFFFFFFFF),
+      border: _legacyHex(0xFFE5E7EB),
+      input: _legacyHex(0xFFE5E7EB),
+      ring: _legacyHex(0xFF3B6EF5),
+      chart1: _legacyHex(0xFF0E043E),
+      chart2: _legacyHex(0xFF3B6EF5),
+      chart3: _legacyHex(0xFF43328E),
+      chart4: _legacyHex(0xFF64748B),
+      chart5: _legacyHex(0xFF93A4D6),
+    );
   }
 
   /// Returns dark Runera color scheme.
   static ColorScheme darkRunera() {
-    return darkNeutral();
+    return ColorScheme(
+      brightness: Brightness.dark,
+      background: _legacyHex(0xFF0E043E),
+      foreground: _legacyHex(0xFFE8EFFF),
+      card: _legacyHex(0xFF16104B),
+      cardForeground: _legacyHex(0xFFE8EFFF),
+      popover: _legacyHex(0xFF16104B),
+      popoverForeground: _legacyHex(0xFFE8EFFF),
+      primary: _legacyHex(0xFF3B6EF5),
+      primaryForeground: _legacyHex(0xFFFFFFFF),
+      secondary: _legacyHex(0xFF20175A),
+      secondaryForeground: _legacyHex(0xFFE8EFFF),
+      muted: _legacyHex(0xFF20175A),
+      mutedForeground: _legacyHex(0xFFB8C3E6),
+      accent: _legacyHex(0xFF2A245F),
+      accentForeground: _legacyHex(0xFFE8EFFF),
+      destructive: _legacyHex(0xFF991B1B),
+      destructiveForeground: _legacyHex(0xFFFFFFFF),
+      border: _legacyHex(0xFF302962),
+      input: _legacyHex(0xFF302962),
+      ring: _legacyHex(0xFF3B6EF5),
+      chart1: _legacyHex(0xFF3B6EF5),
+      chart2: _legacyHex(0xFFE8EFFF),
+      chart3: _legacyHex(0xFF43328E),
+      chart4: _legacyHex(0xFF93A4D6),
+      chart5: _legacyHex(0xFF64748B),
+    );
   }
 
   /// Returns neutral color scheme for the given [mode].

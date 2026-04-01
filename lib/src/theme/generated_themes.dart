@@ -87,9 +87,61 @@ class ColorSchemes {
     chart5: Color(0xFFE23670),
   );
 
-  static const ColorScheme lightRunera = lightNeutral;
+  static const ColorScheme lightRunera = ColorScheme(
+    brightness: Brightness.light,
+    background: Color(0xFFFFFFFF),
+    foreground: Color(0xFF0F172A),
+    card: Color(0xFFFFFFFF),
+    cardForeground: Color(0xFF0F172A),
+    popover: Color(0xFFFFFFFF),
+    popoverForeground: Color(0xFF0F172A),
+    primary: Color(0xFF0E043E),
+    primaryForeground: Color(0xFFFFFFFF),
+    secondary: Color(0xFFF5F7FB),
+    secondaryForeground: Color(0xFF0E043E),
+    muted: Color(0xFFF5F7FB),
+    mutedForeground: Color(0xFF475569),
+    accent: Color(0xFFE8EFFF),
+    accentForeground: Color(0xFF0E043E),
+    destructive: Color(0xFFEF4444),
+    destructiveForeground: Color(0xFFFFFFFF),
+    border: Color(0xFFE5E7EB),
+    input: Color(0xFFE5E7EB),
+    ring: Color(0xFF3B6EF5),
+    chart1: Color(0xFF0E043E),
+    chart2: Color(0xFF3B6EF5),
+    chart3: Color(0xFF43328E),
+    chart4: Color(0xFF64748B),
+    chart5: Color(0xFF93A4D6),
+  );
 
-  static const ColorScheme darkRunera = darkNeutral;
+  static const ColorScheme darkRunera = ColorScheme(
+    brightness: Brightness.dark,
+    background: Color(0xFF0E043E),
+    foreground: Color(0xFFE8EFFF),
+    card: Color(0xFF16104B),
+    cardForeground: Color(0xFFE8EFFF),
+    popover: Color(0xFF16104B),
+    popoverForeground: Color(0xFFE8EFFF),
+    primary: Color(0xFF3B6EF5),
+    primaryForeground: Color(0xFFFFFFFF),
+    secondary: Color(0xFF20175A),
+    secondaryForeground: Color(0xFFE8EFFF),
+    muted: Color(0xFF20175A),
+    mutedForeground: Color(0xFFB8C3E6),
+    accent: Color(0xFF2A245F),
+    accentForeground: Color(0xFFE8EFFF),
+    destructive: Color(0xFF991B1B),
+    destructiveForeground: Color(0xFFFFFFFF),
+    border: Color(0xFF302962),
+    input: Color(0xFF302962),
+    ring: Color(0xFF3B6EF5),
+    chart1: Color(0xFF3B6EF5),
+    chart2: Color(0xFFE8EFFF),
+    chart3: Color(0xFF43328E),
+    chart4: Color(0xFF93A4D6),
+    chart5: Color(0xFF64748B),
+  );
 
   static ColorScheme neutral(ThemeMode mode) {
     assert(() {

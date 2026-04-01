@@ -175,6 +175,13 @@ class ThemeData {
   /// Density settings that scale spacing and padding.
   final Density density;
 
+  /// Spacing values tuned for Runera's roomier product layout.
+  static const Density runeraDensity = Density(
+    baseContainerPadding: 20.0,
+    baseGap: 10.0,
+    baseContentPadding: 16.0,
+  );
+
   /// Creates a [ThemeData] with light color scheme.
   ///
   /// Parameters:
@@ -199,6 +206,23 @@ class ThemeData {
     this.density = Density.defaultDensity,
   }) : _platform = platform;
 
+  /// Creates a light Runera theme preset.
+  ///
+  /// This preset encodes Runera's brand defaults at the theme level:
+  /// a dedicated Runera color scheme, roomier spacing, and rounder corners.
+  const ThemeData.runeraLight({
+    this.colorScheme = ColorSchemes.lightRunera,
+    this.radius = 1,
+    this.scaling = 1,
+    this.typography = const Typography.geist(),
+    this.iconTheme = const IconThemeProperties(),
+    TargetPlatform? platform,
+    this.surfaceOpacity,
+    this.enableFeedback,
+    this.surfaceBlur,
+    this.density = runeraDensity,
+  }) : _platform = platform;
+
   /// Creates a [ThemeData] with dark color scheme.
   ///
   /// Parameters:
@@ -220,6 +244,23 @@ class ThemeData {
     this.surfaceOpacity,
     this.surfaceBlur,
     this.density = Density.defaultDensity,
+    this.enableFeedback,
+  }) : _platform = platform;
+
+  /// Creates a dark Runera theme preset.
+  ///
+  /// This preset keeps the same spacing and corner treatment as light Runera
+  /// while switching to the dark Runera color scheme.
+  const ThemeData.runeraDark({
+    this.colorScheme = ColorSchemes.darkRunera,
+    this.radius = 1,
+    this.scaling = 1,
+    this.typography = const Typography.geist(),
+    this.iconTheme = const IconThemeProperties(),
+    TargetPlatform? platform,
+    this.surfaceOpacity,
+    this.surfaceBlur,
+    this.density = runeraDensity,
     this.enableFeedback,
   }) : _platform = platform;
 
