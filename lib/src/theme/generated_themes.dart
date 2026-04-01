@@ -87,11 +87,23 @@ class ColorSchemes {
     chart5: Color(0xFFE23670),
   );
 
+  static const ColorScheme lightRunera = lightNeutral;
+
+  static const ColorScheme darkRunera = darkNeutral;
+
   static ColorScheme neutral(ThemeMode mode) {
     assert(() {
       _assertNotThemeModeSystem(mode, 'Neutral');
       return true;
     }());
     return mode == ThemeMode.light ? lightNeutral : darkNeutral;
+  }
+
+  static ColorScheme runera(ThemeMode mode) {
+    assert(() {
+      _assertNotThemeModeSystem(mode, 'Runera');
+      return true;
+    }());
+    return mode == ThemeMode.light ? lightRunera : darkRunera;
   }
 }

@@ -98,6 +98,16 @@ class LegacyColorSchemes {
     );
   }
 
+  /// Returns light Runera color scheme.
+  static ColorScheme lightRunera() {
+    return lightNeutral();
+  }
+
+  /// Returns dark Runera color scheme.
+  static ColorScheme darkRunera() {
+    return darkNeutral();
+  }
+
   /// Returns neutral color scheme for the given [mode].
   ///
   /// The [mode] must be either [ThemeMode.light] or [ThemeMode.dark].
@@ -108,5 +118,17 @@ class LegacyColorSchemes {
       return true;
     }());
     return mode == ThemeMode.light ? lightNeutral() : darkNeutral();
+  }
+
+  /// Returns Runera color scheme for the given [mode].
+  ///
+  /// The [mode] must be either [ThemeMode.light] or [ThemeMode.dark].
+  /// [ThemeMode.system] is not supported.
+  static ColorScheme runera(ThemeMode mode) {
+    assert(() {
+      _assertNotThemeModeSystem(mode, 'Runera');
+      return true;
+    }());
+    return mode == ThemeMode.light ? lightRunera() : darkRunera();
   }
 }
