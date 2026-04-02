@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:shadcn_flutter/src/components/control/hover.dart';
@@ -428,6 +429,274 @@ class MultiSelectController<T> extends SelectController<Iterable<T>> {
   MultiSelectController([super.value]);
 }
 
+/// How selected values are rendered inside a multi-select trigger.
+enum MultiSelectTriggerDisplayMode {
+  /// Render selected values as individually built widgets inside a [Wrap].
+  wrap,
+
+  /// Render selected values as a single comma-separated summary.
+  commaSeparated,
+}
+
+class _MultiSelectTriggerSummary<T> extends StatelessWidget {
+  final Iterable<T> values;
+  final String Function(T value) labelBuilder;
+
+  const _MultiSelectTriggerSummary({
+    required this.values,
+    required this.labelBuilder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _MultiSelectTriggerSummaryText(
+      labels: values.map(labelBuilder).toList(growable: false),
+      style: DefaultTextStyle.of(context).style,
+      textDirection: Directionality.of(context),
+      locale: Localizations.maybeLocaleOf(context),
+      textScaler: MediaQuery.maybeTextScalerOf(context) ?? TextScaler.noScaling,
+    );
+  }
+}
+
+class _MultiSelectTriggerSummaryText extends LeafRenderObjectWidget {
+  final List<String> labels;
+  final TextStyle style;
+  final TextDirection textDirection;
+  final Locale? locale;
+  final TextScaler textScaler;
+
+  const _MultiSelectTriggerSummaryText({
+    required this.labels,
+    required this.style,
+    required this.textDirection,
+    required this.locale,
+    required this.textScaler,
+  });
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return _RenderMultiSelectTriggerSummary(
+      labels: labels,
+      style: style,
+      textDirection: textDirection,
+      locale: locale,
+      textScaler: textScaler,
+    );
+  }
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    covariant _RenderMultiSelectTriggerSummary renderObject,
+  ) {
+    renderObject
+      ..labels = labels
+      ..style = style
+      ..textDirection = textDirection
+      ..locale = locale
+      ..textScaler = textScaler;
+  }
+}
+
+class _MultiSelectSummaryLayout {
+  final TextPainter painter;
+  final String fullText;
+  final String displayText;
+  final Size size;
+
+  const _MultiSelectSummaryLayout({
+    required this.painter,
+    required this.fullText,
+    required this.displayText,
+    required this.size,
+  });
+}
+
+class _RenderMultiSelectTriggerSummary extends RenderBox {
+  List<String> _labels;
+  TextStyle _style;
+  TextDirection _textDirection;
+  Locale? _locale;
+  TextScaler _textScaler;
+
+  _RenderMultiSelectTriggerSummary({
+    required List<String> labels,
+    required TextStyle style,
+    required TextDirection textDirection,
+    required Locale? locale,
+    required TextScaler textScaler,
+  })  : _labels = labels,
+        _style = style,
+        _textDirection = textDirection,
+        _locale = locale,
+        _textScaler = textScaler;
+
+  TextPainter? _textPainter;
+  String _fullText = '';
+  String _displayText = '';
+
+  String get debugFullText => _fullText;
+  String get debugDisplayText => _displayText;
+
+  set labels(List<String> value) {
+    if (listEquals(_labels, value)) return;
+    _labels = value;
+    markNeedsLayout();
+    markNeedsSemanticsUpdate();
+  }
+
+  set style(TextStyle value) {
+    if (_style == value) return;
+    _style = value;
+    markNeedsLayout();
+    markNeedsPaint();
+  }
+
+  set textDirection(TextDirection value) {
+    if (_textDirection == value) return;
+    _textDirection = value;
+    markNeedsLayout();
+    markNeedsSemanticsUpdate();
+  }
+
+  set locale(Locale? value) {
+    if (_locale == value) return;
+    _locale = value;
+    markNeedsLayout();
+    markNeedsSemanticsUpdate();
+  }
+
+  set textScaler(TextScaler value) {
+    if (_textScaler == value) return;
+    _textScaler = value;
+    markNeedsLayout();
+  }
+
+  TextPainter _createPainter(String text) {
+    return TextPainter(
+      text: TextSpan(text: text, style: _style),
+      textDirection: _textDirection,
+      locale: _locale,
+      textScaler: _textScaler,
+      maxLines: 1,
+      ellipsis: '...',
+    );
+  }
+
+  double _measureWidth(String text) {
+    final painter = _createPainter(text)..layout(maxWidth: double.infinity);
+    return painter.width;
+  }
+
+  String _resolveSummary(double maxWidth, String fullText) {
+    if (fullText.isEmpty || maxWidth.isInfinite) return fullText;
+    if (_measureWidth(fullText) <= maxWidth) return fullText;
+
+    String? fittedSummary;
+    for (var i = 0; i < _labels.length; i++) {
+      final prefix = _labels.take(i + 1).join(', ');
+      final candidate = i == _labels.length - 1 ? prefix : '$prefix, ...';
+      if (_measureWidth(candidate) <= maxWidth) {
+        fittedSummary = candidate;
+        continue;
+      }
+      break;
+    }
+
+    if (fittedSummary != null) return fittedSummary;
+    return _measureWidth('...') <= maxWidth ? '...' : fullText;
+  }
+
+  _MultiSelectSummaryLayout _computeLayout(BoxConstraints constraints) {
+    final fullText = _labels.join(', ');
+    final maxWidth =
+        constraints.hasBoundedWidth ? constraints.maxWidth : double.infinity;
+    final displayText = _resolveSummary(maxWidth, fullText);
+    final painter = _createPainter(displayText)
+      ..layout(
+        minWidth: constraints.minWidth,
+        maxWidth: maxWidth,
+      );
+
+    return _MultiSelectSummaryLayout(
+      painter: painter,
+      fullText: fullText,
+      displayText: displayText,
+      size: constraints.constrain(painter.size),
+    );
+  }
+
+  double _computeIntrinsicHeight(double width) {
+    final fullText = _labels.join(', ');
+    final maxWidth = width.isFinite ? width : double.infinity;
+    final painter = _createPainter(_resolveSummary(maxWidth, fullText))
+      ..layout(maxWidth: maxWidth);
+    return painter.height;
+  }
+
+  @override
+  Size computeDryLayout(BoxConstraints constraints) {
+    return _computeLayout(constraints).size;
+  }
+
+  @override
+  double computeMinIntrinsicWidth(double height) {
+    return _measureWidth('...');
+  }
+
+  @override
+  double computeMaxIntrinsicWidth(double height) {
+    return _measureWidth(_labels.join(', '));
+  }
+
+  @override
+  double computeMinIntrinsicHeight(double width) {
+    return _computeIntrinsicHeight(width);
+  }
+
+  @override
+  double computeMaxIntrinsicHeight(double width) {
+    return _computeIntrinsicHeight(width);
+  }
+
+  @override
+  double? computeDistanceToActualBaseline(TextBaseline baseline) {
+    return _textPainter?.computeDistanceToActualBaseline(baseline);
+  }
+
+  @override
+  void performLayout() {
+    final layout = _computeLayout(constraints);
+    _textPainter = layout.painter;
+    _fullText = layout.fullText;
+    _displayText = layout.displayText;
+    size = layout.size;
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final painter = _textPainter;
+    if (painter == null) return;
+    painter.paint(context.canvas, offset);
+  }
+
+  @override
+  void describeSemanticsConfiguration(SemanticsConfiguration config) {
+    super.describeSemanticsConfiguration(config);
+    config.isSemanticBoundary = true;
+    config.label = _fullText;
+    config.textDirection = _textDirection;
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('fullText', _fullText));
+    properties.add(StringProperty('displayText', _displayText));
+  }
+}
+
 /// Reactive multi-selection dropdown with automatic state management.
 ///
 /// A high-level multi-select widget that provides automatic state management through
@@ -513,7 +782,15 @@ class ControlledMultiSelect<T> extends StatelessWidget
   final SelectPopupBuilder popup;
   @override
   SelectValueBuilder<Iterable<T>> get itemBuilder => (context, value) {
-        return MultiSelect._buildItem(multiItemBuilder, context, value);
+        return MultiSelect._buildItem(
+          multiItemBuilder,
+          context,
+          value,
+          triggerDisplayMode: triggerDisplayMode,
+          triggerTextBuilder: triggerTextBuilder,
+          triggerBuilder: triggerBuilder,
+          clearSelectionEnabled: canUnselect,
+        );
       };
   @override
   final SelectValueSelectionHandler<Iterable<T>>? valueSelectionHandler;
@@ -524,6 +801,15 @@ class ControlledMultiSelect<T> extends StatelessWidget
 
   /// Builder for rendering individual items in multi-select mode.
   final SelectValueBuilder<T> multiItemBuilder;
+
+  /// How selected values are rendered in the trigger.
+  final MultiSelectTriggerDisplayMode triggerDisplayMode;
+
+  /// Builder for summary labels when [triggerDisplayMode] is comma-separated.
+  final String Function(T value)? triggerTextBuilder;
+
+  /// Optional wrapper for customizing the trigger around the built selected-value content.
+  final MultiSelectTriggerBuilder<T>? triggerBuilder;
 
   /// Creates a [ControlledMultiSelect].
   ///
@@ -552,6 +838,9 @@ class ControlledMultiSelect<T> extends StatelessWidget
   /// - [popup] (SelectPopupBuilder, required): builder for popup content
   /// - [itemBuilder] (`SelectItemBuilder<T>`, required): builder for individual items
   /// - [multiItemBuilder] (`SelectValueBuilder<T>`, required): builder for selected items display
+  /// - [triggerDisplayMode] (`MultiSelectTriggerDisplayMode`, default: wrap): selected value trigger layout
+  /// - [triggerTextBuilder] (`String Function(T value)?`, optional): text builder for comma-separated trigger summaries
+  /// - [triggerBuilder] (`MultiSelectTriggerBuilder<T>?`, optional): wrapper around the built trigger content
   /// - [valueSelectionHandler] (`SelectValueSelectionHandler<Iterable<T>>?`, optional): custom selection logic
   /// - [valueSelectionPredicate] (`SelectValueSelectionPredicate<Iterable<T>>?`, optional): selection validation
   /// - [showValuePredicate] (`Predicate<Iterable<T>>?`, optional): visibility filter for values
@@ -567,6 +856,18 @@ class ControlledMultiSelect<T> extends StatelessWidget
   ///   ),
   ///   multiItemBuilder: (context, items) => Wrap(
   ///     children: items.map((item) => Chip(label: Text(item))).toList(),
+  ///   ),
+  ///   triggerDisplayMode: MultiSelectTriggerDisplayMode.commaSeparated,
+  ///   triggerTextBuilder: (item) => item,
+  ///   triggerBuilder: (context, values, child, clearSelection) => Row(
+  ///     children: [
+  ///       Button(
+  ///         onPressed: clearSelection,
+  ///         child: const Icon(Icons.close).iconSmall(),
+  ///       ),
+  ///       const Gap(8),
+  ///       Expanded(child: child),
+  ///     ],
   ///   ),
   /// )
   /// ```
@@ -590,6 +891,9 @@ class ControlledMultiSelect<T> extends StatelessWidget
     this.canUnselect = true,
     this.autoClosePopover = false,
     this.showValuePredicate,
+    this.triggerDisplayMode = MultiSelectTriggerDisplayMode.wrap,
+    this.triggerTextBuilder,
+    this.triggerBuilder,
     required this.popup,
     required SelectValueBuilder<T> itemBuilder,
     this.valueSelectionHandler,
@@ -822,6 +1126,20 @@ typedef SelectPopupBuilder = Widget Function(BuildContext context);
 ///
 /// Returns: Widget representation of the value.
 typedef SelectValueBuilder<T> = Widget Function(BuildContext context, T value);
+
+/// Builder for customizing multi-select trigger content around the built value display.
+///
+/// Parameters:
+/// - [context] (`BuildContext`): Build context.
+/// - [value] (`Iterable<T>`): Current selected values.
+/// - [child] (`Widget`): The internally built trigger content.
+/// - [clearSelection] (`VoidCallback?`): Clears all selections when invoked.
+typedef MultiSelectTriggerBuilder<T> = Widget Function(
+  BuildContext context,
+  Iterable<T> value,
+  Widget child,
+  VoidCallback? clearSelection,
+);
 
 /// Handler for custom selection logic.
 ///
@@ -1563,7 +1881,15 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
   final SelectPopupBuilder popup;
   @override
   SelectValueBuilder<Iterable<T>> get itemBuilder => (context, value) {
-        return _buildItem(multiItemBuilder, context, value);
+        return _buildItem(
+          multiItemBuilder,
+          context,
+          value,
+          triggerDisplayMode: triggerDisplayMode,
+          triggerTextBuilder: triggerTextBuilder,
+          triggerBuilder: triggerBuilder,
+          clearSelectionEnabled: canUnselect,
+        );
       };
   @override
   final SelectValueSelectionHandler<Iterable<T>>? valueSelectionHandler;
@@ -1572,6 +1898,15 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
 
   /// Builder for rendering individual items in the chip display.
   final SelectValueBuilder<T> multiItemBuilder;
+
+  /// How selected values are rendered in the trigger.
+  final MultiSelectTriggerDisplayMode triggerDisplayMode;
+
+  /// Builder for summary labels when [triggerDisplayMode] is comma-separated.
+  final String Function(T value)? triggerTextBuilder;
+
+  /// Optional wrapper for customizing the trigger around the built selected-value content.
+  final MultiSelectTriggerBuilder<T>? triggerBuilder;
 
   @override
   final Predicate<Iterable<T>>? showValuePredicate;
@@ -1599,6 +1934,9 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
   /// - [canUnselect] (bool): Whether user can deselect items, defaults to true
   /// - [autoClosePopover] (bool?): Whether popup closes after selection, defaults to false
   /// - [enabled] (bool?): Whether multi-select is enabled for interaction
+  /// - [triggerDisplayMode] (`MultiSelectTriggerDisplayMode`): selected value trigger layout, defaults to wrap
+  /// - [triggerTextBuilder] (`String Function(T value)?`): text builder for comma-separated trigger summaries
+  /// - [triggerBuilder] (`MultiSelectTriggerBuilder<T>?`): wrapper around the built trigger content
   /// - [valueSelectionHandler] (`SelectValueSelectionHandler<Iterable<T>>?`): Custom selection logic
   /// - [valueSelectionPredicate] (`SelectValueSelectionPredicate<Iterable<T>>?`): Predicate for allowing selection
   /// - [showValuePredicate] (`Predicate<Iterable<T>>?`): Predicate for showing items
@@ -1622,6 +1960,9 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
     this.canUnselect = true,
     this.autoClosePopover = false,
     this.enabled,
+    this.triggerDisplayMode = MultiSelectTriggerDisplayMode.wrap,
+    this.triggerTextBuilder,
+    this.triggerBuilder,
     this.valueSelectionHandler,
     this.valueSelectionPredicate,
     this.showValuePredicate,
@@ -1632,16 +1973,49 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
   static Widget _buildItem<T>(
     SelectValueBuilder<T> multiItemBuilder,
     BuildContext context,
-    Iterable<T> value,
-  ) {
-    final theme = Theme.of(context);
-    final scaling = theme.scaling;
-    final densityGap = theme.density.baseGap * scaling;
-    return Wrap(
-      spacing: densityGap * 0.5,
-      runSpacing: densityGap * 0.5,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [for (var value in value) multiItemBuilder(context, value)],
+    Iterable<T> value, {
+    required MultiSelectTriggerDisplayMode triggerDisplayMode,
+    String Function(T value)? triggerTextBuilder,
+    MultiSelectTriggerBuilder<T>? triggerBuilder,
+    required bool clearSelectionEnabled,
+  }) {
+    final child =
+        triggerDisplayMode == MultiSelectTriggerDisplayMode.commaSeparated
+            ? _MultiSelectTriggerSummary<T>(
+                values: value,
+                labelBuilder: triggerTextBuilder ?? (value) => value.toString(),
+              )
+            : (() {
+                final theme = Theme.of(context);
+                final scaling = theme.scaling;
+                final densityGap = theme.density.baseGap * scaling;
+                return Wrap(
+                  spacing: densityGap * 0.5,
+                  runSpacing: densityGap * 0.5,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    for (var value in value) multiItemBuilder(context, value),
+                  ],
+                );
+              })();
+
+    if (triggerBuilder == null) {
+      return child;
+    }
+
+    final selectData = Data.maybeOf<SelectData>(context);
+    final clearSelection =
+        selectData == null || !selectData.enabled || !clearSelectionEnabled
+            ? null
+            : () {
+                selectData.onChanged(null, false);
+              };
+
+    return triggerBuilder(
+      context,
+      value,
+      child,
+      clearSelection,
     );
   }
 
