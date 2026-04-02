@@ -140,6 +140,7 @@ export 'src/theme/color_scheme.dart';
 export 'src/theme/generated_colors.dart';
 export 'src/theme/generated_themes.dart';
 export 'src/theme/legacy_generated_themes.dart';
+export 'src/theme/runera_gradients.dart';
 export 'src/theme/theme.dart';
 export 'src/theme/typography.dart';
 export 'src/util.dart';

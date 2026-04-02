@@ -33,6 +33,65 @@ void main() {
       expect(find.text('Secondary Button'), findsOneWidget);
     });
 
+    testWidgets('uses gradient decoration for Runera primary buttons',
+        (tester) async {
+      await tester.pumpWidget(
+        ShadcnApp(
+          theme: const ThemeData.runeraLight(),
+          home: Scaffold(
+            child: Button.primary(
+              onPressed: () {},
+              child: Text('Runera Button'),
+            ),
+          ),
+        ),
+      );
+
+      final decoratedBox = tester.widget<OverflowDecoratedBox>(
+        find.descendant(
+          of: find.byType(Button),
+          matching: find.byType(OverflowDecoratedBox),
+        ),
+      );
+      final decoration = decoratedBox.decoration as BoxDecoration;
+      final gradient = decoration.gradient as LinearGradient?;
+
+      expect(gradient, isNotNull);
+      expect(gradient!.begin, Alignment.topLeft);
+      expect(gradient.end, Alignment.bottomRight);
+      expect(
+        gradient.colors,
+        equals([
+          ColorSchemes.lightRunera.accentForeground,
+          ColorSchemes.lightRunera.primary,
+        ]),
+      );
+      expect(decoration.color, isNull);
+    });
+
+    testWidgets('keeps default primary buttons as a solid fill',
+        (tester) async {
+      await tester.pumpWidget(
+        SimpleApp(
+          child: Button.primary(
+            onPressed: () {},
+            child: Text('Primary Button'),
+          ),
+        ),
+      );
+
+      final decoratedBox = tester.widget<OverflowDecoratedBox>(
+        find.descendant(
+          of: find.byType(Button),
+          matching: find.byType(OverflowDecoratedBox),
+        ),
+      );
+      final decoration = decoratedBox.decoration as BoxDecoration;
+
+      expect(decoration.gradient, isNull);
+      expect(decoration.color, ColorSchemes.lightNeutral.primary);
+    });
+
     testWidgets('renders outline button', (tester) async {
       await tester.pumpWidget(
         SimpleApp(

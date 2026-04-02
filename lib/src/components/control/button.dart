@@ -3673,6 +3673,10 @@ Color _buttonOnColor(Color color) {
   return color.computeLuminance() > 0.45 ? Colors.black : Colors.white;
 }
 
+bool _usesRuneraPrimaryGradient(ThemeData themeData) {
+  return RuneraGradients.isPreset(themeData.colorScheme);
+}
+
 // PRIMARY
 Decoration _buttonPrimaryDecoration(
     BuildContext context, Set<WidgetState> states) {
@@ -3680,6 +3684,13 @@ Decoration _buttonPrimaryDecoration(
   if (states.contains(WidgetState.disabled)) {
     return BoxDecoration(
       color: _buttonDisabledFillColor(themeData),
+      borderRadius: BorderRadius.circular(themeData.radiusMd),
+    );
+  }
+  if (_usesRuneraPrimaryGradient(themeData)) {
+    return BoxDecoration(
+      gradient: RuneraGradients.primary(
+          colorScheme: themeData.colorScheme, states: states),
       borderRadius: BorderRadius.circular(themeData.radiusMd),
     );
   }
