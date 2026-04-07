@@ -89,7 +89,7 @@ class ColorSchemes {
 
   static const ColorScheme lightRunera = ColorScheme(
     brightness: Brightness.light,
-    background: Color(0xFFFFFFFF),
+    background: Color(0xFFF9F8F5),
     foreground: Color(0xFF0F172A),
     card: Color(0xFFFFFFFF),
     cardForeground: Color(0xFF0F172A),

@@ -104,7 +104,7 @@ class LegacyColorSchemes {
   static ColorScheme lightRunera() {
     return ColorScheme(
       brightness: Brightness.light,
-      background: _legacyHex(0xFFFFFFFF),
+      background: _legacyHex(0xFFF9F8F5),
       foreground: _legacyHex(0xFF0F172A),
       card: _legacyHex(0xFFFFFFFF),
       cardForeground: _legacyHex(0xFF0F172A),

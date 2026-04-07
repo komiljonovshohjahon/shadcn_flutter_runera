@@ -5,6 +5,8 @@ extension ThemeExtension on BuildContext {
   /// Get the theme data
   ThemeData get theme => Theme.of(this);
 
+  ColorScheme get colorScheme => theme.colorScheme;
+
   /// Get component theme
   T? componentTheme<T extends ComponentThemeData>() =>
       ComponentTheme.maybeOf<T>(this);

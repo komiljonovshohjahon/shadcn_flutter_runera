@@ -141,6 +141,11 @@ class NavigationSidebar extends StatefulWidget {
   /// constraints are unconstrained.
   final bool keepMainAxisSize;
 
+  /// Optional border decoration for the navigation sidebar.
+  ///
+  /// [Default] - Border.all(color: borderColor)
+  final Border? border;
+
   /// Creates a [NavigationSidebar] with the specified configuration and items.
   ///
   /// Parameters:
@@ -170,6 +175,7 @@ class NavigationSidebar extends StatefulWidget {
     this.header,
     this.footer,
     required this.children,
+    this.border,
   });
 
   @override
@@ -245,7 +251,7 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
           child: Container(
             decoration: BoxDecoration(
               color: backgroundColor,
-              border: Border.all(color: borderColor),
+              border: widget.border ?? Border.all(color: borderColor),
             ),
             child: ClipRect(
               child: RepaintBoundary(

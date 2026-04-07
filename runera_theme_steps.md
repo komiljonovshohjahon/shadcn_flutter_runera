@@ -8,7 +8,8 @@ Define the actual Runera color tokens in [generated_themes.dart](/Users/shoh/Doc
 - Use the PDF values directly for:
   - `primary`: `#0E043E`
   - `accent`: `#3B6EF5`
-  - `background/card/popover`: `#FFFFFF`
+  - `background`: `#F9F8F5`
+  - `card/popover`: `#FFFFFF`
   - `foreground`: `#0F172A`
   - `secondary/muted`: `#F5F7FB`
   - `border/input`: `#E5E7EB`
