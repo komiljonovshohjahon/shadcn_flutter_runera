@@ -11,6 +11,22 @@ bool _isSelectTriggerHoveredLike(Set<WidgetState> states) {
       states.contains(WidgetState.focused);
 }
 
+double _selectTriggerFocusedSurfaceBlend(ThemeData theme,
+    {required bool filled}) {
+  if (theme.brightness == Brightness.dark) {
+    return filled ? 0.38 : 0.56;
+  }
+  return filled ? 0.45 : 0.65;
+}
+
+double _selectTriggerHoveredSurfaceBlend(ThemeData theme,
+    {required bool filled}) {
+  if (theme.brightness == Brightness.dark) {
+    return filled ? 0.16 : 0.28;
+  }
+  return filled ? 0.2 : 0.35;
+}
+
 Color _selectTriggerBackgroundColor(
   ThemeData theme,
   Set<WidgetState> states, {
@@ -30,11 +46,17 @@ Color _selectTriggerBackgroundColor(
 
   if (states.contains(WidgetState.focused)) {
     return Color.lerp(
-        baseColor, theme.colorScheme.accent, filled ? 0.45 : 0.65)!;
+      baseColor,
+      theme.colorScheme.accent,
+      _selectTriggerFocusedSurfaceBlend(theme, filled: filled),
+    )!;
   }
   if (_isSelectTriggerHoveredLike(states)) {
     return Color.lerp(
-        baseColor, theme.colorScheme.accent, filled ? 0.2 : 0.35)!;
+      baseColor,
+      theme.colorScheme.accent,
+      _selectTriggerHoveredSurfaceBlend(theme, filled: filled),
+    )!;
   }
   return baseColor;
 }

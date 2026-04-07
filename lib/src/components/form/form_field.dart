@@ -5,6 +5,14 @@ bool _isFormTriggerHoveredLike(Set<WidgetState> states) {
       states.contains(WidgetState.focused);
 }
 
+double _formTriggerFocusedSurfaceBlend(ThemeData theme) {
+  return theme.brightness == Brightness.dark ? 0.56 : 0.65;
+}
+
+double _formTriggerHoveredSurfaceBlend(ThemeData theme) {
+  return theme.brightness == Brightness.dark ? 0.28 : 0.35;
+}
+
 Color _formTriggerBackgroundColor(ThemeData theme, Set<WidgetState> states) {
   if (states.contains(WidgetState.disabled)) {
     return Color.lerp(
@@ -17,14 +25,14 @@ Color _formTriggerBackgroundColor(ThemeData theme, Set<WidgetState> states) {
     return Color.lerp(
       theme.colorScheme.background,
       theme.colorScheme.accent,
-      0.65,
+      _formTriggerFocusedSurfaceBlend(theme),
     )!;
   }
   if (_isFormTriggerHoveredLike(states)) {
     return Color.lerp(
       theme.colorScheme.background,
       theme.colorScheme.accent,
-      0.35,
+      _formTriggerHoveredSurfaceBlend(theme),
     )!;
   }
   return theme.colorScheme.background;

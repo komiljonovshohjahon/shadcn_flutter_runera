@@ -1995,6 +1995,20 @@ Color _textFieldDisabledBackgroundColor(ThemeData theme) {
   )!;
 }
 
+double _textFieldFocusedSurfaceBlend(ThemeData theme, {required bool filled}) {
+  if (theme.brightness == Brightness.dark) {
+    return filled ? 0.38 : 0.56;
+  }
+  return filled ? 0.45 : 0.65;
+}
+
+double _textFieldHoveredSurfaceBlend(ThemeData theme, {required bool filled}) {
+  if (theme.brightness == Brightness.dark) {
+    return filled ? 0.16 : 0.28;
+  }
+  return filled ? 0.2 : 0.35;
+}
+
 Color _textFieldSurfaceColor(
   ThemeData theme, {
   required bool filled,
@@ -2012,11 +2026,17 @@ Color _textFieldSurfaceColor(
 
   if (focused) {
     return Color.lerp(
-        baseColor, theme.colorScheme.accent, filled ? 0.45 : 0.65)!;
+      baseColor,
+      theme.colorScheme.accent,
+      _textFieldFocusedSurfaceBlend(theme, filled: filled),
+    )!;
   }
   if (hovered) {
     return Color.lerp(
-        baseColor, theme.colorScheme.accent, filled ? 0.2 : 0.35)!;
+      baseColor,
+      theme.colorScheme.accent,
+      _textFieldHoveredSurfaceBlend(theme, filled: filled),
+    )!;
   }
   return baseColor;
 }

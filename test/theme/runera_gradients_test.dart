@@ -25,6 +25,22 @@ void main() {
       );
     });
 
+    test('builds the dark Runera primary gradient', () {
+      final gradient = RuneraGradients.primary(
+        colorScheme: ColorSchemes.darkRunera,
+      );
+
+      expect(gradient.begin, Alignment.topLeft);
+      expect(gradient.end, Alignment.bottomRight);
+      expect(
+        gradient.colors,
+        equals([
+          ColorSchemes.darkRunera.accent,
+          ColorSchemes.darkRunera.primary,
+        ]),
+      );
+    });
+
     test('darkens the gradient for hovered states', () {
       final gradient = RuneraGradients.primary(
         colorScheme: ColorSchemes.lightRunera,
@@ -38,6 +54,22 @@ void main() {
       expect(
         gradient.colors.last,
         isNot(ColorSchemes.lightRunera.primary),
+      );
+    });
+
+    test('darkens the dark Runera gradient for pressed states', () {
+      final gradient = RuneraGradients.primary(
+        colorScheme: ColorSchemes.darkRunera,
+        states: {WidgetState.pressed},
+      );
+
+      expect(
+        gradient.colors.first,
+        isNot(ColorSchemes.darkRunera.accent),
+      );
+      expect(
+        gradient.colors.last,
+        isNot(ColorSchemes.darkRunera.primary),
       );
     });
   });
