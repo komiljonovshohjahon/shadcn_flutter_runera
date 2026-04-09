@@ -1,5 +1,7 @@
 import '../../shadcn_flutter.dart';
 
+const String _runeraMonoFontFamily = 'SFMonoRegular';
+
 /// Typography definitions for shadcn_flutter.
 ///
 /// Provides predefined text styles for different purposes including
@@ -156,12 +158,9 @@ class Typography {
   });
 
   /// Creates a typography tuned for the Runera brand.
-  ///
-  /// Runera uses Flutter's default font family until dedicated brand fonts are
-  /// bundled with the package.
   const Typography.runera({
     this.sans = const TextStyle(),
-    this.mono = const TextStyle(),
+    this.mono = const TextStyle(fontFamily: _runeraMonoFontFamily),
     this.xSmall = const TextStyle(fontSize: 12, height: 16 / 12),
     this.small = const TextStyle(fontSize: 14, height: 20 / 14),
     this.base = const TextStyle(fontSize: 16, height: 24 / 16),

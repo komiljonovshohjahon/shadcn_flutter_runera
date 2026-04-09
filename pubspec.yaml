@@ -31,6 +31,10 @@ dev_dependencies:
 flutter:
   generate: true
   uses-material-design: true
+  fonts:
+    - family: SFMonoRegular
+      fonts:
+        - asset: assets/fonts/SFMonoRegular.otf
 
 topics:
   - widgets
