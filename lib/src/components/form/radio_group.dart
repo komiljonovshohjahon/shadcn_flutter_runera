@@ -1006,9 +1006,9 @@ class RadioGroupState<T> extends State<RadioGroup<T>>
   bool get enabled => widget.enabled ?? widget.onChanged != null;
   void _setSelected(T value) {
     if (!enabled) return;
-    if (widget.value != value) {
-      widget.onChanged?.call(value);
-    }
+    // if (widget.value != value) {
+    widget.onChanged?.call(value);
+    // }
   }
 
   @override

@@ -59,6 +59,125 @@ class BadgeTheme extends ComponentThemeData {
       Object.hash(primaryStyle, secondaryStyle, outlineStyle, destructiveStyle);
 }
 
+AbstractButtonStyle _badgeBaseStyle(AbstractButtonStyle style) {
+  return style.copyWith(
+    textStyle: (context, states, value) {
+      return value.copyWith(fontWeight: FontWeight.w500);
+    },
+  );
+}
+
+AbstractButtonStyle _badgeStaticStyle(AbstractButtonStyle style) {
+  return style.copyWith(
+    decoration: (context, states, decoration) {
+      final effectiveStates = Set<WidgetState>.of(states)
+        ..remove(WidgetState.disabled);
+      return style.decoration(context, effectiveStates);
+    },
+    mouseCursor: (context, states, mouseCursor) {
+      return SystemMouseCursors.basic;
+    },
+    textStyle: (context, states, value) {
+      final effectiveStates = Set<WidgetState>.of(states)
+        ..remove(WidgetState.disabled);
+      return style.textStyle(context, effectiveStates);
+    },
+    iconTheme: (context, states, value) {
+      final effectiveStates = Set<WidgetState>.of(states)
+        ..remove(WidgetState.disabled);
+      return style.iconTheme(context, effectiveStates);
+    },
+  );
+}
+
+Color _badgeColorTone(Color color, double delta) {
+  final hsl = HSLColor.fromColor(color);
+  return hsl.withLightness((hsl.lightness + delta).clamp(0.0, 1.0)).toColor();
+}
+
+Color _resolveCustomBadgeColor(Color color, Set<WidgetState> states) {
+  if (states.contains(WidgetState.disabled)) {
+    return color.scaleAlpha(0.55);
+  }
+
+  final delta = color.computeLuminance() > 0.45 ? -1.0 : 1.0;
+  if (states.contains(WidgetState.pressed)) {
+    return _badgeColorTone(color, 0.08 * delta);
+  }
+  if (states.contains(WidgetState.hovered) ||
+      states.contains(WidgetState.focused)) {
+    return _badgeColorTone(color, 0.04 * delta);
+  }
+  return color;
+}
+
+Decoration _resolveCustomBadgeDecoration(
+  BuildContext context,
+  Set<WidgetState> states,
+  Decoration decoration,
+  Color color,
+) {
+  final resolvedColor = _resolveCustomBadgeColor(color, states);
+  if (decoration is BoxDecoration) {
+    return BoxDecoration(
+      color: resolvedColor,
+      image: decoration.image,
+      border: decoration.border,
+      borderRadius:
+          decoration.shape == BoxShape.circle ? null : decoration.borderRadius,
+      boxShadow: decoration.boxShadow,
+      shape: decoration.shape,
+      backgroundBlendMode: decoration.backgroundBlendMode,
+    );
+  }
+  if (decoration is ShapeDecoration) {
+    return ShapeDecoration(
+      color: resolvedColor,
+      image: decoration.image,
+      shadows: decoration.shadows,
+      shape: decoration.shape,
+    );
+  }
+
+  final theme = Theme.of(context);
+  return BoxDecoration(
+    color: resolvedColor,
+    borderRadius: BorderRadius.circular(theme.radiusMd),
+  );
+}
+
+class _Badge extends StatelessWidget {
+  final Widget child;
+  final VoidCallback? onPressed;
+  final Widget? leading;
+  final Widget? trailing;
+  final AbstractButtonStyle style;
+
+  const _Badge({
+    required this.child,
+    required this.style,
+    this.onPressed,
+    this.leading,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final interactive = onPressed != null;
+    final resolvedStyle = interactive ? style : _badgeStaticStyle(style);
+    return ExcludeFocus(
+      child: Button(
+        leading: leading,
+        trailing: trailing,
+        onPressed: onPressed,
+        enabled: interactive,
+        style: resolvedStyle,
+        child: child,
+      ),
+    );
+  }
+}
+
 /// A primary style badge widget for highlighting important information or status.
 ///
 /// [PrimaryBadge] displays content in a prominent badge format using the primary
@@ -132,26 +251,125 @@ class PrimaryBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final compTheme = ComponentTheme.maybeOf<BadgeTheme>(context);
-    final baseStyle = style ??
-        compTheme?.primaryStyle ??
-        const ButtonStyle.primary(
-          size: ButtonSize.small,
-          density: ButtonDensity.dense,
-          shape: ButtonShape.rectangle,
-        ).copyWith(
-          textStyle: (context, states, value) {
-            return value.copyWith(fontWeight: FontWeight.w500);
-          },
-        );
-    return ExcludeFocus(
-      child: Button(
-        leading: leading,
-        trailing: trailing,
-        onPressed: onPressed,
-        enabled: true,
-        style: baseStyle,
-        child: child,
+    final baseStyle = _badgeBaseStyle(
+      style ??
+          compTheme?.primaryStyle ??
+          const ButtonStyle.primary(
+            size: ButtonSize.small,
+            density: ButtonDensity.dense,
+            shape: ButtonShape.rectangle,
+          ),
+    );
+    return _Badge(
+      leading: leading,
+      trailing: trailing,
+      onPressed: onPressed,
+      style: baseStyle,
+      child: child,
+    );
+  }
+}
+
+/// A badge with manually specified colors.
+///
+/// [CustomBadge] keeps the compact badge layout while allowing the fill color
+/// to be set directly. When [foregroundColor] is omitted, a contrasting label
+/// color is derived automatically from [color].
+///
+/// Example:
+/// ```dart
+/// CustomBadge(
+///   color: Colors.emerald,
+///   child: Text('BETA'),
+/// );
+///
+/// CustomBadge(
+///   color: Colors.orange,
+///   foregroundColor: Colors.black,
+///   leading: Icon(Icons.warning_amber_rounded, size: 14),
+///   child: Text('Needs Review'),
+/// );
+/// ```
+class CustomBadge extends StatelessWidget {
+  /// The main content of the badge.
+  final Widget child;
+
+  /// The badge fill color.
+  final Color color;
+
+  /// Optional explicit foreground color for text and icons.
+  ///
+  /// If `null`, a contrasting color is derived from [color].
+  final Color? foregroundColor;
+
+  /// Optional callback when the badge is pressed.
+  final VoidCallback? onPressed;
+
+  /// Optional widget displayed before the child content.
+  final Widget? leading;
+
+  /// Optional widget displayed after the child content.
+  final Widget? trailing;
+
+  /// Optional style override used as the structural base for the badge.
+  ///
+  /// The supplied style keeps its padding, margin, and shape, while the badge
+  /// color and foreground are resolved from [color] and [foregroundColor].
+  final AbstractButtonStyle? style;
+
+  /// Creates a badge with manually specified colors.
+  const CustomBadge({
+    super.key,
+    required this.child,
+    required this.color,
+    this.foregroundColor,
+    this.onPressed,
+    this.leading,
+    this.trailing,
+    this.style,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedForegroundColor = foregroundColor ?? color.getContrastColor();
+    final baseStyle = _badgeBaseStyle(
+      (style ??
+              const ButtonStyle.primary(
+                size: ButtonSize.small,
+                density: ButtonDensity.dense,
+                shape: ButtonShape.rectangle,
+              ))
+          .copyWith(
+        decoration: (context, states, decoration) {
+          return _resolveCustomBadgeDecoration(
+            context,
+            states,
+            decoration,
+            color,
+          );
+        },
+        textStyle: (context, states, value) {
+          return value.copyWith(
+            color: states.contains(WidgetState.disabled)
+                ? resolvedForegroundColor.scaleAlpha(0.7)
+                : resolvedForegroundColor,
+          );
+        },
+        iconTheme: (context, states, value) {
+          return value.copyWith(
+            color: states.contains(WidgetState.disabled)
+                ? resolvedForegroundColor.scaleAlpha(0.7)
+                : resolvedForegroundColor,
+          );
+        },
       ),
+    );
+    return _Badge(
+      leading: leading,
+      trailing: trailing,
+      onPressed: onPressed,
+      style: baseStyle,
+      child: child,
     );
   }
 }
@@ -189,26 +407,21 @@ class SecondaryBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final compTheme = ComponentTheme.maybeOf<BadgeTheme>(context);
-    final baseStyle = style ??
-        compTheme?.secondaryStyle ??
-        const ButtonStyle.secondary(
-          size: ButtonSize.small,
-          density: ButtonDensity.dense,
-          shape: ButtonShape.rectangle,
-        ).copyWith(
-          textStyle: (context, states, value) {
-            return value.copyWith(fontWeight: FontWeight.w500);
-          },
-        );
-    return ExcludeFocus(
-      child: Button(
-        leading: leading,
-        trailing: trailing,
-        onPressed: onPressed,
-        enabled: true,
-        style: baseStyle,
-        child: child,
-      ),
+    final baseStyle = _badgeBaseStyle(
+      style ??
+          compTheme?.secondaryStyle ??
+          const ButtonStyle.secondary(
+            size: ButtonSize.small,
+            density: ButtonDensity.dense,
+            shape: ButtonShape.rectangle,
+          ),
+    );
+    return _Badge(
+      leading: leading,
+      trailing: trailing,
+      onPressed: onPressed,
+      style: baseStyle,
+      child: child,
     );
   }
 }
@@ -246,26 +459,21 @@ class OutlineBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final compTheme = ComponentTheme.maybeOf<BadgeTheme>(context);
-    final baseStyle = style ??
-        compTheme?.outlineStyle ??
-        const ButtonStyle.outline(
-          size: ButtonSize.small,
-          density: ButtonDensity.dense,
-          shape: ButtonShape.rectangle,
-        ).copyWith(
-          textStyle: (context, states, value) {
-            return value.copyWith(fontWeight: FontWeight.w500);
-          },
-        );
-    return ExcludeFocus(
-      child: Button(
-        leading: leading,
-        trailing: trailing,
-        onPressed: onPressed,
-        enabled: true,
-        style: baseStyle,
-        child: child,
-      ),
+    final baseStyle = _badgeBaseStyle(
+      style ??
+          compTheme?.outlineStyle ??
+          const ButtonStyle.outline(
+            size: ButtonSize.small,
+            density: ButtonDensity.dense,
+            shape: ButtonShape.rectangle,
+          ),
+    );
+    return _Badge(
+      leading: leading,
+      trailing: trailing,
+      onPressed: onPressed,
+      style: baseStyle,
+      child: child,
     );
   }
 }
@@ -303,26 +511,21 @@ class DestructiveBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final compTheme = ComponentTheme.maybeOf<BadgeTheme>(context);
-    final baseStyle = style ??
-        compTheme?.destructiveStyle ??
-        const ButtonStyle.destructive(
-          size: ButtonSize.small,
-          density: ButtonDensity.dense,
-          shape: ButtonShape.rectangle,
-        ).copyWith(
-          textStyle: (context, states, value) {
-            return value.copyWith(fontWeight: FontWeight.w500);
-          },
-        );
-    return ExcludeFocus(
-      child: Button(
-        leading: leading,
-        trailing: trailing,
-        onPressed: onPressed,
-        enabled: true,
-        style: baseStyle,
-        child: child,
-      ),
+    final baseStyle = _badgeBaseStyle(
+      style ??
+          compTheme?.destructiveStyle ??
+          const ButtonStyle.destructive(
+            size: ButtonSize.small,
+            density: ButtonDensity.dense,
+            shape: ButtonShape.rectangle,
+          ),
+    );
+    return _Badge(
+      leading: leading,
+      trailing: trailing,
+      onPressed: onPressed,
+      style: baseStyle,
+      child: child,
     );
   }
 }
